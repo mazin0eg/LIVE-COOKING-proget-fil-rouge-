@@ -6,9 +6,11 @@
 
 **Titre du projet** : Live Cooking
 
-**Objectif** : Créer un site web interactif pour les recettes culinaires, permettant aux utilisateurs de suivre des étapes en temps réel grâce à une barre de progression (Live Cooking).
+**Contexte** : Aujourd’hui, avec la montée en puissance du digital, l’apprentissage de la cuisine devient de plus en plus interactif. De nombreuses plateformes proposent des recettes, mais très peu offrent une immersion en temps réel pour accompagner les utilisateurs tout au long du processus de préparation.
 
-**Public cible** : Amateurs de cuisine, chefs, et toute personne intéressée par les recettes interactives.
+**Objectif** : Créer un site web interactif pour les recettes culinaires, permettant aux utilisateurs de suivre des étapes en temps réel grâce à une barre de progression (Live Cooking). Cette plateforme vise à améliorer l’expérience d’apprentissage culinaire en proposant une approche dynamique et engageante.
+
+**Public cible** : Amateurs de cuisine, chefs, et toute personne intéressée par les recettes interactives, qu’ils soient débutants ou experts.
 
 </div>
 
@@ -33,7 +35,22 @@ L’approche interactive rend l’apprentissage de la cuisine plus ludique et pr
 
 <div style="color: #f33f33;">
 
-## 3. Objectifs fonctionnels
+## 3. Problématique
+
+L’apprentissage de la cuisine en ligne présente plusieurs défis :
+- Le manque d’interactivité dans les tutoriels et les recettes écrites.
+- L’absence d’un guide en temps réel pour assurer une bonne gestion du temps de cuisson et de préparation.
+- La difficulté pour les débutants de suivre correctement les étapes sans supervision.
+
+Le projet Live Cooking vise à répondre à ces problématiques en offrant une solution immersive, où les utilisateurs suivent une recette avec une barre de progression en temps réel et des notifications pour assurer le bon déroulement de chaque étape.
+
+</div>
+
+---
+
+<div style="color: #f33f33;">
+
+## 4. Objectifs fonctionnels
 
 ### Rôles des utilisateurs :
 
@@ -66,7 +83,7 @@ L’approche interactive rend l’apprentissage de la cuisine plus ludique et pr
 
 <div style="color: white; background-color: #f33f33; padding: 10px;">
 
-## 4. Objectifs techniques
+## 5. Objectifs techniques
 
 **Technologies utilisées** :
 
@@ -88,7 +105,7 @@ L’approche interactive rend l’apprentissage de la cuisine plus ludique et pr
 
 <div style="color: #f33f33;">
 
-## 5. Conception UX/UI
+## 6. Conception UX/UI
 
 - **Thème visuel** : Design épuré et moderne, mettant en avant les images des plats.
 - **Navigation** :
@@ -102,7 +119,7 @@ L’approche interactive rend l’apprentissage de la cuisine plus ludique et pr
 
 <div style="color: white; background-color: #f33f33; padding: 10px;">
 
-## 6. Livrables
+## 7. Livrables
 
 - Site web fonctionnel avec toutes les fonctionnalités décrites.
 - Documentation technique (codes, base de données, instructions d’installation).
@@ -114,7 +131,7 @@ L’approche interactive rend l’apprentissage de la cuisine plus ludique et pr
 
 <div style="color: #f33f33;">
 
-## 7. Planning
+## 8. Planning
 
 - **Étape 1** : Recherche et analyse (1 semaine).
 - **Étape 2** : Conception UML (2 semaines).
@@ -129,7 +146,7 @@ L’approche interactive rend l’apprentissage de la cuisine plus ludique et pr
 
 <div style="color: white; background-color: #f33f33; padding: 10px;">
 
-## 8. Contraintes
+## 9. Contraintes
 
 - Respecter le délai de fin d'année scolaire.
 - Compatibilité avec les navigateurs modernes.
@@ -141,7 +158,7 @@ L’approche interactive rend l’apprentissage de la cuisine plus ludique et pr
 
 <div style="color: #f33f33;">
 
-## 9. Budget et ressources
+## 10. Budget et ressources
 
 - Aucun budget spécifique. Utilisation de ressources gratuites ou open-source.
 - Besoin d’un ordinateur et d’un environnement de développement Laravel.
