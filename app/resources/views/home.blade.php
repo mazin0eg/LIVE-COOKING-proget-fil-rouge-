@@ -43,7 +43,12 @@
                 <span class="text-xl font-bold text-gray-800">Platea</span>
             </div>
             
-            <!-- Menu Items -->
+            <!-- Mobile Burger Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            
+            <!-- Menu Items - Desktop -->
             <div class="hidden md:flex space-x-6">
                 <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">Home</a>
                 <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">About</a>
@@ -53,18 +58,43 @@
                 <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">Contact</a>
             </div>
             
-            <!-- Right Side Icons -->
-            <div class="flex items-center space-x-4">
-                <a href="#" class="text-gray-600 hover:text-red-500 transition-colors">
-                    <i class="fas fa-search"></i>
-                </a>
+            <!-- Right Side Icons - Desktop -->
+            <div class="hidden md:flex items-center space-x-4">
+               
                 <a href="#" class="text-gray-600 hover:text-red-500 transition-colors">
                     <i class="fas fa-user"></i>
                 </a>
                 <a href="#" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition-colors shadow-sm">Sign in</a>
             </div>
         </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden mt-4 pb-4">
+            <div class="flex flex-col space-y-3">
+                <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">Home</a>
+                <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">About</a>
+                <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">Recipes</a>
+                <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">Cuisines</a>
+                <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">Articles</a>
+                <a href="#" class="text-gray-800 font-medium hover:text-red-500 transition-colors">Contact</a>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-200 flex flex-col space-y-3">
+                
+                <a href="#" class="flex items-center text-gray-600 hover:text-red-500 transition-colors">
+                    <i class="fas fa-user mr-2"></i> Profile
+                </a>
+                <a href="#" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition-colors shadow-sm text-center">Sign in</a>
+            </div>
+        </div>
     </nav>
+
+    <script>
+        // Toggle mobile menu
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
 
     <!-- Hero Section -->
     <section class="relative bg-gray-200">
@@ -143,9 +173,13 @@
                             4.8
                         </div>
                         <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
+                            <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
                                 <i class="fas fa-heart"></i>
                             </button>
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
+                            <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
+                            Italian
                         </div>
                     </div>
                     <div class="p-4">
@@ -168,41 +202,7 @@
                     </div>
                 </div>
 
-                <!-- Recipe Card 2 -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Soup" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                            <i class="fas fa-star text-yellow-400 mr-1"></i>
-                            4.5
-                        </div>
-                        <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Vegetable Lentil Soup</h3>
-                        <div class="flex items-center text-xs text-gray-500 mb-2">
-                            <span class="flex items-center mr-3">
-                                <i class="far fa-clock mr-1"></i> 45 mins
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-fire-alt mr-1"></i> 220 cal
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center">
-                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                <span class="text-xs text-gray-500">Sarah Baker</span>
-                            </div>
-                            <span class="text-xs text-gray-500">3 days ago</span>
-                        </div>
-                    </div>
-                </div>
-
-                 <!-- Recipe Card 1 -->
+                <!-- Recipe Card 1 -->
                 <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
                     <div class="relative">
                         <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Creamy pasta" class="w-full h-48 object-cover">
@@ -211,9 +211,13 @@
                             4.8
                         </div>
                         <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
+                            <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
                                 <i class="fas fa-heart"></i>
                             </button>
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
+                            <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
+                            Italian
                         </div>
                     </div>
                     <div class="p-4">
@@ -238,7 +242,7 @@
 
 
                  <!-- Recipe Card 1 -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                 <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
                     <div class="relative">
                         <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Creamy pasta" class="w-full h-48 object-cover">
                         <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
@@ -246,9 +250,13 @@
                             4.8
                         </div>
                         <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
+                            <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
                                 <i class="fas fa-heart"></i>
                             </button>
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
+                            <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
+                            Italian
                         </div>
                     </div>
                     <div class="p-4">
@@ -270,6 +278,45 @@
                         </div>
                     </div>
                 </div>
+
+                 <!-- Recipe Card 1 -->
+                 <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Creamy pasta" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            4.8
+                        </div>
+                        <div class="absolute top-2 right-2 flex space-x-2">
+                            <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
+                            <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
+                            Italian
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-gray-900 mb-2">Creamy Garlic Mushroom Pasta</h3>
+                        <div class="flex items-center text-xs text-gray-500 mb-2">
+                            <span class="flex items-center mr-3">
+                                <i class="far fa-clock mr-1"></i> 25 mins
+                            </span>
+                            <span class="flex items-center">
+                                <i class="fas fa-fire-alt mr-1"></i> 320 cal
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
+                                <span class="text-xs text-gray-500">John Cook</span>
+                            </div>
+                            <span class="text-xs text-gray-500">2 days ago</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
