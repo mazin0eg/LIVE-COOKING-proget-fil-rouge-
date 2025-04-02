@@ -29,7 +29,7 @@ Route::get('/search', function () {
     return view('search');
 });
 
-Route::get('/recette/{id}', function () {
+Route::get('/recette', function () {
     return view('recette');
 });
 
@@ -38,7 +38,7 @@ Route::get('/add', function () {
 });
 
 
-Route::get('/admin', [categoriesController::class, 'addcategories'])->name('addcategories'); 
+Route::post('/admin', [categoriesController::class, 'addcategories'])->name('addcategories'); 
 Route::get('/admin', [categoriesController::class, 'showadminpage'])->name('show.adminpage'); 
 
 

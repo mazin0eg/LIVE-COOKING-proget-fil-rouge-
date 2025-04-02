@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +54,19 @@
     </style>
 </head>
 <body class="bg-gray-50">
-   
+    @if(session('success'))
+    <div class="fixed top-4 right-4 z-50 toast bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+    </div>
+    <script>
+        setTimeout(() => {
+            document.querySelector('.toast').classList.add('hidden');
+        }, 3000);
+    </script>
+    @endif
 
   
         <!-- Toast Notification -->
@@ -77,13 +87,7 @@
                         <h1 class="text-2xl font-bold text-gray-900">Platea Admin</h1>
                     </div>
                     
-                    <!-- Current Time -->
-                    <div class="hidden md:flex items-center space-x-4">
-                        <div class="text-sm text-gray-500">
-                            <i class="far fa-clock mr-2"></i>
-                            <span id="currentTime">2025-03-27 10:56:23 UTC</span>
-                        </div>
-                    </div>
+                   
     
                     <!-- User Menu -->
                     <div class="relative dropdown">
@@ -342,25 +346,26 @@
                     <tr class="text-left bg-gray-50">
                         <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Recipes</th>
-                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
+
+                @foreach ( $categories as $categorie  )
+                
+               
+               
                 <tbody class="bg-white divide-y divide-gray-200">
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">Breakfast</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{$categorie->name}}</td>
                         <td class="px-6 py-4 whitespace-nowrap">45</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Active
-                            </span>
-                        </td>
+                        
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <button class="text-blue-500 hover:text-blue-700 mr-3">Edit</button>
                             <button class="text-red-500 hover:text-red-700">Delete</button>
                         </td>
                     </tr>
                 </tbody>
+                @endforeach
             </table>
         </div>
     </div>
@@ -376,59 +381,20 @@
             </button>
         </div>
         
-        <form id="categoryForm" class="space-y-4">
+        <form id="categoryForm" action="{{route('addcategories')}}" method="POST" class="space-y-4">
+            @csrf
             <div>
-                <label for="categoryName" class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
                 <input 
                     type="text" 
-                    id="categoryName" 
-                    name="categoryName"
+                    id="name" 
+                    name="name"
                     class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     placeholder="Enter category name"
                     required
                 >
             </div>
-
-            <div>
-                <label for="categoryDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea 
-                    id="categoryDescription" 
-                    name="categoryDescription"
-                    rows="3"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="Enter category description"
-                ></textarea>
-            </div>
-
-            <div>
-                <label for="categoryIcon" class="block text-sm font-medium text-gray-700 mb-1">Icon</label>
-                <div class="flex items-center space-x-2">
-                    <select 
-                        id="categoryIcon" 
-                        name="categoryIcon"
-                        class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    >
-                        <option value="utensils">🍽️ Utensils</option>
-                        <option value="coffee">☕ Coffee</option>
-                        <option value="pizza">🍕 Pizza</option>
-                        <option value="salad">🥗 Salad</option>
-                        <option value="cake">🍰 Cake</option>
-                    </select>
-                </div>
-            </div>
-
-            <div>
-                <label class="flex items-center">
-                    <input 
-                        type="checkbox" 
-                        class="form-checkbox h-4 w-4 text-red-500 rounded focus:ring-2 focus:ring-red-500"
-                        name="isActive"
-                        checked
-                    >
-                    <span class="ml-2 text-sm text-gray-700">Active Category</span>
-                </label>
-            </div>
-
+        
             <div class="flex space-x-3 pt-4">
                 <button 
                     type="button"
@@ -466,27 +432,6 @@
         }
     });
 
-    // Handle form submission
-    document.getElementById('categoryForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = {
-            name: document.getElementById('categoryName').value,
-            description: document.getElementById('categoryDescription').value,
-            icon: document.getElementById('categoryIcon').value,
-            isActive: document.querySelector('input[name="isActive"]').checked
-        };
-
-        // Here you would typically send the data to your backend
-        console.log('Category Data:', formData);
-
-        // Close the modal
-        closeCategoryModal();
-
-        // Reset form
-        this.reset();
-    });
 </script>
 
             <!-- Chef Validation -->
@@ -525,7 +470,16 @@
                     </div>
                 </div>
             </div>
+
+            <--add ingredients-->
+                <div 
         </div>
     </section>
+
+
+    
 </body>
 </html>
+
+
+

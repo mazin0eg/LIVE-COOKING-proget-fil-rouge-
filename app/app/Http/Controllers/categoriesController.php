@@ -3,23 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Categories;
+use App\Models\categories;
 
 class categoriesController extends Controller
 {
-
     public function showadminpage()
     {
-        return view('adminpage');
+        // Fetch categories to display in the admin page
+        $categories = categories::all();
+        return view('adminpage', ['categories' => $categories]);
     }
+
     public function addcategories(Request $request)
     {
         $validated = $request->validate([
-            'nome' => 'required|string|max:200',
-            'recipes_id' => 'required|string|max:200',
+            'name' => 'required|string|max:200',
         ]);
 
         $category = Categories::create($validated);
-        return response()->json($category, 201);
+        
+        // Redirect back with success message instead of JSON response
+        return redirect()->back()->with('success', 'Category added successfully!');
     }
 }
