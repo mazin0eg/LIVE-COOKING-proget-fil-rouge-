@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\categories;
+use App\Models\ingrediants;
 
 class categoriesController extends Controller
 {
     public function showadminpage()
     {
-        // Fetch categories to display in the admin page
-        $categories = categories::all();
-        return view('adminpage', ['categories' => $categories]);
+        $categories = categories::all();  // Fetch all categories
+        $ingrediants = ingrediants::all(); // Fetch all ingredients
+
+        return view('adminpage', compact('categories', 'ingrediants'));
     }
 
     public function addcategories(Request $request)
@@ -20,9 +22,19 @@ class categoriesController extends Controller
             'name' => 'required|string|max:200',
         ]);
 
-        $category = Categories::create($validated);
+        $categories = categories::create($validated);
         
         // Redirect back with success message instead of JSON response
         return redirect()->back()->with('success', 'Category added successfully!');
     }
+
+    public function destroy($id)
+    {
+        $categories = categories::findOrFail($id);
+        $categories->delete();
+        
+        return redirect()->back()->with('success', 'Category deleted successfully!');
+    }
+
+
 }

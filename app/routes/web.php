@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\categoriesController;
+use App\Http\Controllers\ingrediantsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,8 +39,15 @@ Route::get('/add', function () {
 });
 
 
-Route::post('/admin', [categoriesController::class, 'addcategories'])->name('addcategories'); 
-Route::get('/admin', [categoriesController::class, 'showadminpage'])->name('show.adminpage'); 
+// Categories Routes
+Route::post('/admin/categories', [CategoriesController::class, 'addcategories'])->name('addcategories');
+Route::get('/admin/categories', [CategoriesController::class, 'showadminpage'])->name('show.adminpage');
+Route::delete('/admin/categories/{id}', [CategoriesController::class, 'destroy'])->name('delete.category');
+
+// Ingrediants Routes
+Route::post('/admin/ingrediants', [IngrediantsController::class, 'addingrediants'])->name('addingrediants');
+Route::delete('/admin/ingrediants/{id}', [IngrediantsController::class, 'destroy'])->name('delete.ingrediant');
+
 
 
 

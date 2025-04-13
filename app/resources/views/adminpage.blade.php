@@ -360,8 +360,11 @@
                         <td class="px-6 py-4 whitespace-nowrap">45</td>
                         
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <button class="text-blue-500 hover:text-blue-700 mr-3">Edit</button>
-                            <button class="text-red-500 hover:text-red-700">Delete</button>
+                            <form action="{{ route('delete.category', $categorie->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
@@ -433,6 +436,118 @@
     });
 
 </script>
+_____________________________________________________________
+
+           <!-- Ingrediant Management -->
+<div class="bg-white rounded-lg shadow-sm mb-6">
+    <div class="p-6 border-b border-gray-100">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold">Ingrediants</h2>
+            <button onclick="openIngrediantModal()" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors">
+                Add Ingrediant
+            </button>
+        </div>
+    </div>
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="text-left bg-gray-50">
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Recipes</th>
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+
+                @foreach ($ingrediants as $ingrediant)
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{$ingrediant->name}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">45</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <form action="{{ route('delete.ingrediant', $ingrediant->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                @endforeach
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Ingrediant Modal -->
+<div id="ingrediantModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-gray-900">Add New Ingrediant</h3>
+            <button onclick="closeIngrediantModal()" class="text-gray-600 hover:text-gray-800">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="ingrediantForm" action="{{ route('addingrediants') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Ingrediant Name</label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="Enter ingrediant name"
+                    required
+                >
+            </div>
+
+            <div class="flex space-x-3 pt-4">
+                <button 
+                    type="button"
+                    onclick="closeIngrediantModal()"
+                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit"
+                    class="flex-1 px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                >
+                    Add Ingrediant
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openIngrediantModal() {
+        document.getElementById('ingrediantModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeIngrediantModal() {
+        document.getElementById('ingrediantModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('ingrediantModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeIngrediantModal();
+        }
+    });
+</script>
+
+
+        ________________________________
+
+
+
+
+
 
             <!-- Chef Validation -->
             <div class="bg-white rounded-lg shadow-sm mb-12">
@@ -471,8 +586,8 @@
                 </div>
             </div>
 
-            <--add ingredients-->
-                <div 
+            
+        </div>
         </div>
     </section>
 
