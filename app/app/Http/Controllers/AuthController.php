@@ -49,6 +49,9 @@ public function login(Request $request)
 
         // Hash the password before saving
         $validated['password'] = bcrypt($validated['password']);
+        
+        // Set default role to 'cooker'
+        $validated['role'] = 'cooker';
 
         // Create user and login
         $user = User::create($validated);

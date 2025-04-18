@@ -8,6 +8,8 @@ use App\Models\ingrediants;
 class ingrediantsController extends Controller
 {
    
+   
+  
 
     public function addingrediants(Request $request)
     {

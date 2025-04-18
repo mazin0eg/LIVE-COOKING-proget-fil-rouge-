@@ -107,9 +107,12 @@
                                 <i class="fas fa-cog mr-2"></i> Settings
                             </a>
                             <hr class="my-2 border-gray-200">
-                            <a href="#logout" class="block px-4 py-2 text-sm text-red-500 hover:bg-gray-100">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                            </a>
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -436,7 +439,6 @@
     });
 
 </script>
-_____________________________________________________________
 
            <!-- Ingrediant Management -->
 <div class="bg-white rounded-lg shadow-sm mb-6">
@@ -542,46 +544,64 @@ _____________________________________________________________
 </script>
 
 
-        ________________________________
-
-
-
-
-
-
-            <!-- Chef Validation -->
+         <!-- Chef Validation -->
             <div class="bg-white rounded-lg shadow-sm mb-12">
                 <div class="p-6 border-b border-gray-100">
                     <h2 class="text-2xl font-bold">Chef Applications</h2>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Chef Application Card -->
-                        <div class="recipe-card bg-white rounded-lg border p-6">
-                            <div class="flex items-center mb-4">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Chef" class="w-12 h-12 rounded-full mr-4">
-                                <div>
-                                    <h3 class="font-bold text-gray-900">James Wilson</h3>
-                                    <p class="text-sm text-gray-500">Italian Cuisine Specialist</p>
+                        @if($chefApplications->count() > 0)
+                            @foreach($chefApplications as $application)
+                                <!-- Chef Application Card -->
+                                <div class="recipe-card bg-white rounded-lg border p-6">
+                                    <div class="flex items-center mb-4">
+                                        <img src="https://ui-avatars.com/api/?name={{ $application->first_name }}+{{ $application->last_name }}&background=random" alt="Chef" class="w-12 h-12 rounded-full mr-4">
+                                        <div>
+                                            <h3 class="font-bold text-gray-900">{{ $application->first_name }} {{ $application->last_name }}</h3>
+                                            <p class="text-sm text-gray-500">{{ $application->speciality ?? 'Chef Applicant' }}</p>
+                                            @if($application->user_id)
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Registered User</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 mb-4">
+                                        <p class="text-sm"><span class="font-medium">Experience:</span> {{ $application->experience ?? 'Not specified' }}</p>
+                                        <p class="text-sm"><span class="font-medium">Email:</span> {{ $application->email }}</p>
+                                        <p class="text-sm"><span class="font-medium">Message:</span> {{ Str::limit($application->message, 100) }}</p>
+                                        <p class="text-sm"><span class="font-medium">Status:</span> 
+                                            @if($application->status == 'pending')
+                                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending Review</span>
+                                            @elseif($application->status == 'approved')
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Approved</span>
+                                            @else
+                                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Rejected</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                    @if($application->status == 'pending')
+                                        <div class="flex space-x-2">
+                                            <form action="{{ route('chef.approve', $application->id) }}" method="POST" class="flex-1">
+                                                @csrf
+                                                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm">
+                                                    Approve
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('chef.reject', $application->id) }}" method="POST" class="flex-1">
+                                                @csrf
+                                                <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @endif
                                 </div>
+                            @endforeach
+                        @else
+                            <div class="col-span-3 text-center py-8">
+                                <p class="text-gray-500">No chef applications found.</p>
                             </div>
-                            <div class="space-y-2 mb-4">
-                                <p class="text-sm"><span class="font-medium">Experience:</span> 5 years</p>
-                                <p class="text-sm"><span class="font-medium">Location:</span> New York, USA</p>
-                                <p class="text-sm"><span class="font-medium">Status:</span> 
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending Review</span>
-                                </p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm">
-                                    Approve
-                                </button>
-                                <button class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm">
-                                    Reject
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Add more chef application cards -->
+                        @endif
                     </div>
                 </div>
             </div>
@@ -595,6 +615,3 @@ _____________________________________________________________
     
 </body>
 </html>
-
-
-

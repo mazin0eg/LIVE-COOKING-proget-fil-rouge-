@@ -8,13 +8,7 @@ use App\Models\ingrediants;
 
 class categoriesController extends Controller
 {
-    public function showadminpage()
-    {
-        $categories = categories::all();  // Fetch all categories
-        $ingrediants = ingrediants::all(); // Fetch all ingredients
-
-        return view('adminpage', compact('categories', 'ingrediants'));
-    }
+   
 
     public function addcategories(Request $request)
     {

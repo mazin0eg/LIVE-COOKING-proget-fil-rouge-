@@ -92,22 +92,41 @@
                 <div class="bg-white rounded-lg shadow-sm p-8">
                     <h2 class="text-3xl font-bold text-gray-900 mb-8">Send us a Message</h2>
                     
-                    <form class="space-y-6">
+                    @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
+                    @endif
+
+                    @if(session('info'))
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6">
+                        <span class="block sm:inline">{{ session('info') }}</span>
+                    </div>
+                    @endif
+
+                    <form class="space-y-6" action="{{ route('contact.submit') }}" method="POST">
+                        @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- First Name -->
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">First Name</label>
                                 <input type="text" 
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                       placeholder="Enter your first name">
+                                       name="first_name"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                       placeholder="Enter your first name"
+                                       value="{{ Auth::check() ? Auth::user()->first_name : old('first_name') }}"
+                                       required>
                             </div>
-
+                            
                             <!-- Last Name -->
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Last Name</label>
                                 <input type="text" 
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                       placeholder="Enter your last name">
+                                       name="last_name"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                       placeholder="Enter your last name"
+                                       value="{{ Auth::check() ? Auth::user()->last_name : old('last_name') }}"
+                                       required>
                             </div>
                         </div>
 
@@ -115,34 +134,64 @@
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Email Address</label>
                             <input type="email" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                   placeholder="Enter your email">
+                                   name="email"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                   placeholder="Enter your email address"
+                                   value="{{ Auth::check() ? Auth::user()->email : old('email') }}"
+                                   required>
                         </div>
 
                         <!-- Subject -->
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Subject</label>
-                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
-                                <option value="">Select a subject</option>
+                            <select name="subject" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    id="subjectSelect"
+                                    required>
                                 <option value="general">General Inquiry</option>
-                                <option value="support">Technical Support</option>
-                                <option value="partnership">Partnership</option>
-                                <option value="press">Press Inquiry</option>
+                                <option value="support">Customer Support</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="chef_application">Chef Application</option>
                                 <option value="other">Other</option>
                             </select>
+                        </div>
+
+                        <!-- Chef Application Fields (hidden by default) -->
+                        <div id="chefFields" class="hidden space-y-6">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Years of Experience</label>
+                                <input type="text" 
+                                       name="experience"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                       placeholder="e.g., 5 years">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Cuisine Speciality</label>
+                                <input type="text" 
+                                       name="speciality"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                       placeholder="e.g., Italian, French, etc.">
+                            </div>
+                            
+                            <input type="hidden" name="is_chef_application" id="isChefApplication" value="0">
                         </div>
 
                         <!-- Message -->
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Message</label>
                             <textarea rows="6" 
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                      placeholder="Enter your message"></textarea>
+                                      name="message"
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                      placeholder="Enter your message"
+                                      required></textarea>
                         </div>
 
                         <!-- Consent Checkbox -->
                         <div class="flex items-start">
-                            <input type="checkbox" class="mt-1 w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500">
+                            <input type="checkbox" 
+                                   class="mt-1 w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500"
+                                   required>
                             <label class="ml-2 text-gray-600 text-sm">
                                 I agree to the <a href="#" class="text-red-500 hover:text-red-600">Privacy Policy</a> and consent to having my data processed.
                             </label>
@@ -217,11 +266,18 @@
             });
         });
 
-        // Form Submission
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Add form submission logic here
-            alert('Message sent successfully!');
+        // Subject dropdown change handler
+        document.getElementById('subjectSelect').addEventListener('change', function() {
+            const chefFields = document.getElementById('chefFields');
+            const isChefApplication = document.getElementById('isChefApplication');
+            
+            if (this.value === 'chef_application') {
+                chefFields.classList.remove('hidden');
+                isChefApplication.value = '1';
+            } else {
+                chefFields.classList.add('hidden');
+                isChefApplication.value = '0';
+            }
         });
     </script>
 </body>

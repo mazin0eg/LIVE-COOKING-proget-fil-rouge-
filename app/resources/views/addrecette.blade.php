@@ -45,7 +45,8 @@
             </div>
 
             <!-- Recipe Form -->
-            <form class="space-y-8">
+            <form class="space-y-8" action="{{ route('recipe.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
                 <!-- Basic Info Section -->
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-xl font-bold mb-6">Basic Information</h2>
@@ -198,12 +199,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Category</label>
-                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
-                                <option>Main Course</option>
-                                <option>Appetizer</option>
-                                <option>Dessert</option>
-                                <option>Breakfast</option>
-                                <option>Snack</option>
+                            <select name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div>
