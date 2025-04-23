@@ -105,163 +105,71 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                <!-- Recipe Card 1 -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Creamy pasta" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                            <i class="fas fa-star text-yellow-400 mr-1"></i>
-                            4.8
+                @forelse($latestRecipes as $recipe)
+                <!-- Recipe Card -->
+                <a href="{{ route('recipes.show', $recipe) }}" class="block">
+                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                        <div class="relative">
+                            @if($recipe->image_path)
+                                <img src="{{ asset('storage/' . $recipe->image_path) }}" alt="{{ $recipe->title }}" class="w-full h-48 object-cover">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Recipe placeholder" class="w-full h-48 object-cover">
+                            @endif
+                            <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                4.8
+                            </div>
+                            <div class="absolute top-2 right-2 flex space-x-2">
+                                <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
+                                <i class="fas fa-utensils mr-1.5"></i>
+                                {{ $recipe->cuisine }}
+                            </div>
                         </div>
-                        <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                            <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                            Italian
+                        <div class="p-4">
+                            <h3 class="font-bold text-gray-900 mb-2">{{ $recipe->title }}</h3>
+                            <div class="flex items-center text-xs text-gray-500 mb-2">
+                                <span class="flex items-center mr-3">
+                                    <i class="far fa-clock mr-1"></i> {{ $recipe->prep_time + $recipe->cook_time }} mins
+                                </span>
+                                <span class="flex items-center">
+                                    <i class="fas fa-user-friends mr-1"></i> {{ $recipe->servings }} servings
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    @if($recipe->user)
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($recipe->user->name) }}&background=random" alt="{{ $recipe->user->name }}" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
+                                        <span class="text-xs text-gray-500">Chef {{ $recipe->user->name }}</span>
+                                    @else
+                                        <img src="https://ui-avatars.com/api/?name=Unknown&background=random" alt="Unknown Chef" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
+                                        <span class="text-xs text-gray-500">Unknown Chef</span>
+                                    @endif
+                                </div>
+                                <span class="text-xs text-gray-500">{{ $recipe->created_at->diffForHumans() }}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Creamy Garlic Mushroom Pasta</h3>
-                        <div class="flex items-center text-xs text-gray-500 mb-2">
-                            <span class="flex items-center mr-3">
-                                <i class="far fa-clock mr-1"></i> 25 mins
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-fire-alt mr-1"></i> 320 cal
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                <span class="text-xs text-gray-500">John Cook</span>
-                            </div>
-                            <span class="text-xs text-gray-500">2 days ago</span>
-                        </div>
+                </a>
+                @empty
+                <div class="col-span-5 p-8 text-center">
+                    <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <i class="fas fa-utensils text-gray-300 text-5xl mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No Recipes Found</h3>
+                        <p class="text-gray-500 mb-4">There are no recipes in the system yet.</p>
                     </div>
                 </div>
-
-                <!-- Recipe Card 1 -->
-                <a href="/repat.html" class="block">
-                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Creamy pasta" class="w-full h-48 object-cover">
-                            <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                                <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                4.8
-                            </div>
-                            <div class="absolute top-2 right-2 flex space-x-2">
-                                <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                                <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                                Italian
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-gray-900 mb-2">Creamy Garlic Mushroom Pasta</h3>
-                            <div class="flex items-center text-xs text-gray-500 mb-2">
-                                <span class="flex items-center mr-3">
-                                    <i class="far fa-clock mr-1"></i> 25 mins
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-fire-alt mr-1"></i> 320 cal
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center">
-                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                    <span class="text-xs text-gray-500">John Cook</span>
-                                </div>
-                                <span class="text-xs text-gray-500">2 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+                @endforelse
 
 
-                <a href="/repat.html" class="block">
-                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Creamy pasta" class="w-full h-48 object-cover">
-                            <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                                <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                4.8
-                            </div>
-                            <div class="absolute top-2 right-2 flex space-x-2">
-                                <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                                <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                                Italian
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-gray-900 mb-2">Creamy Garlic Mushroom Pasta</h3>
-                            <div class="flex items-center text-xs text-gray-500 mb-2">
-                                <span class="flex items-center mr-3">
-                                    <i class="far fa-clock mr-1"></i> 25 mins
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-fire-alt mr-1"></i> 320 cal
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center">
-                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                    <span class="text-xs text-gray-500">John Cook</span>
-                                </div>
-                                <span class="text-xs text-gray-500">2 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
 
-                 <!-- Recipe Card 1 -->
-                 <a href="/repat.html" class="block">
-                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Creamy pasta" class="w-full h-48 object-cover">
-                            <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                                <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                4.8
-                            </div>
-                            <div class="absolute top-2 right-2 flex space-x-2">
-                                <button class="heart-button bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm hover:bg-white hover:text-red-600 transition-all transform hover:scale-110">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                                <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                                Italian
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-gray-900 mb-2">Creamy Garlic Mushroom Pasta</h3>
-                            <div class="flex items-center text-xs text-gray-500 mb-2">
-                                <span class="flex items-center mr-3">
-                                    <i class="far fa-clock mr-1"></i> 25 mins
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-fire-alt mr-1"></i> 320 cal
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center">
-                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                    <span class="text-xs text-gray-500">John Cook</span>
-                                </div>
-                                <span class="text-xs text-gray-500">2 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+
+               
+
+                 
 
             </div>
         </div>
@@ -301,117 +209,61 @@
                 <a href="#" class="text-red-500 font-medium hover:underline">View All</a>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- New Recipe Card 1 -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Avocado Salad" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">New</div>
-                        <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
-                                <i class="fas fa-heart"></i>
-                            </button>
+                @forelse($newRecipes as $recipe)
+                <!-- New Recipe Card -->
+                <a href="{{ route('recipes.show', $recipe) }}" class="block">
+                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                        <div class="relative">
+                            @if($recipe->image_path)
+                                <img src="{{ asset('storage/' . $recipe->image_path) }}" alt="{{ $recipe->title }}" class="w-full h-48 object-cover">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Recipe placeholder" class="w-full h-48 object-cover">
+                            @endif
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">New</div>
+                            <div class="absolute top-2 right-2 flex space-x-2">
+                                <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
+                                <i class="fas fa-utensils mr-1.5"></i>
+                                {{ $recipe->cuisine }}
+                            </div>
                         </div>
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                            <img src="https://flagcdn.com/w20/mx.png" alt="Mexico" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                            Mexican
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Fresh Avocado & Citrus Salad</h3>
-                        <div class="flex items-center text-xs text-gray-500 mb-2">
-                            <span class="flex items-center mr-3">
-                                <i class="far fa-clock mr-1"></i> 15 mins
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-user-friends mr-1"></i> 2 servings
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- New Recipe Card 2 -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Pancakes" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">New</div>
-                        <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                            <img src="https://flagcdn.com/w20/us.png" alt="USA" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                            American
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Fluffy Banana Pancakes Stack</h3>
-                        <div class="flex items-center text-xs text-gray-500 mb-2">
-                            <span class="flex items-center mr-3">
-                                <i class="far fa-clock mr-1"></i> 20 mins
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-user-friends mr-1"></i> 4 servings
-                            </span>
+                        <div class="p-4">
+                            <h3 class="font-bold text-gray-900 mb-2">{{ $recipe->title }}</h3>
+                            <div class="flex items-center text-xs text-gray-500 mb-2">
+                                <span class="flex items-center mr-3">
+                                    <i class="far fa-clock mr-1"></i> {{ $recipe->prep_time + $recipe->cook_time }} mins
+                                </span>
+                                <span class="flex items-center">
+                                    <i class="fas fa-user-friends mr-1"></i> {{ $recipe->servings }} servings
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center mt-3 pt-3 border-t">
+                                <div class="flex items-center">
+                                    @if($recipe->user)
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($recipe->user->name) }}&background=random" alt="{{ $recipe->user->name }}" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
+                                        <span class="text-xs text-gray-500">Chef {{ $recipe->user->name }}</span>
+                                    @else
+                                        <img src="https://ui-avatars.com/api/?name=Unknown&background=random" alt="Unknown Chef" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
+                                        <span class="text-xs text-gray-500">Unknown Chef</span>
+                                    @endif
+                                </div>
+                                <span class="text-xs text-gray-500">{{ $recipe->created_at->diffForHumans() }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- New Recipe Card 3 -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Thai Curry" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">New</div>
-                        <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                            <img src="https://flagcdn.com/w20/th.png" alt="Thailand" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                            Thai
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Spicy Thai Green Curry</h3>
-                        <div class="flex items-center text-xs text-gray-500 mb-2">
-                            <span class="flex items-center mr-3">
-                                <i class="far fa-clock mr-1"></i> 35 mins
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-user-friends mr-1"></i> 3 servings
-                            </span>
-                        </div>
+                </a>
+                @empty
+                <div class="col-span-4 p-8 text-center">
+                    <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <i class="fas fa-utensils text-gray-300 text-5xl mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No New Recipes</h3>
+                        <p class="text-gray-500 mb-4">There are no new recipes added in the last 7 days.</p>
                     </div>
                 </div>
-
-                <!-- New Recipe Card 4 -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Mediterranean plate" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">New</div>
-                        <div class="absolute top-2 right-2 flex space-x-2">
-                            <button class="heart-button bg-white rounded-full p-2 text-red-500 shadow-sm">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                            <img src="https://flagcdn.com/w20/gr.png" alt="Greece" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                            Mediterranean
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Mediterranean Mezze Platter</h3>
-                        <div class="flex items-center text-xs text-gray-500 mb-2">
-                            <span class="flex items-center mr-3">
-                                <i class="far fa-clock mr-1"></i> 40 mins
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-user-friends mr-1"></i> 6 servings
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
