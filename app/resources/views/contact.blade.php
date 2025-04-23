@@ -103,6 +103,23 @@
                         <span class="block sm:inline">{{ session('info') }}</span>
                     </div>
                     @endif
+                    
+                    @if(session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                        <p class="font-bold">Please correct the following errors:</p>
+                        <ul class="list-disc ml-5 mt-2">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
 
                     <form class="space-y-6" action="{{ route('contact.submit') }}" method="POST">
                         @csrf
@@ -151,15 +168,24 @@
                                 <option value="general">General Inquiry</option>
                                 <option value="support">Customer Support</option>
                                 <option value="feedback">Feedback</option>
-                                <option value="chef_application">Chef Application</option>
+                                <option value="chef_application" {{ Auth::check() && Auth::user()->role === 'cooker' ? 'selected' : '' }}>Chef Application</option>
+                                <option value="recipe_suggestion">Recipe Suggestion</option>
                                 <option value="other">Other</option>
                             </select>
+                            @if(!Auth::check())
+                                <p class="text-sm text-gray-500 mt-2"><i class="fas fa-info-circle mr-1"></i> You must be logged in to apply as a chef.</p>
+                            @elseif(Auth::check() && Auth::user()->role === 'chef')
+                                <p class="text-sm text-green-500 mt-2"><i class="fas fa-check-circle mr-1"></i> You are already approved as a chef!</p>
+                            @elseif(Auth::check() && Auth::user()->role === 'cooker')
+                                <p class="text-sm text-blue-500 mt-2"><i class="fas fa-info-circle mr-1"></i> Select "Chef Application" to apply to become a chef and add your own recipes!</p>
+                            @endif
                         </div>
 
                         <!-- Chef Application Fields (hidden by default) -->
-                        <div id="chefFields" class="hidden space-y-6">
+                        <div id="chefFields" class="hidden space-y-6 bg-gray-50 p-6 rounded-lg border border-gray-200 mt-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Chef Application Details</h3>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Years of Experience</label>
+                                <label class="block text-gray-700 font-medium mb-2">Years of Experience <span class="text-red-500">*</span></label>
                                 <input type="text" 
                                        name="experience"
                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -167,14 +193,28 @@
                             </div>
                             
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Cuisine Speciality</label>
+                                <label class="block text-gray-700 font-medium mb-2">Cuisine Speciality <span class="text-red-500">*</span></label>
                                 <input type="text" 
                                        name="speciality"
                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                                        placeholder="e.g., Italian, French, etc.">
                             </div>
                             
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Why do you want to become a chef? <span class="text-red-500">*</span></label>
+                                <textarea name="chef_reason" 
+                                          rows="3"
+                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                          placeholder="Tell us why you're passionate about sharing your recipes..."></textarea>
+                            </div>
+                            
                             <input type="hidden" name="is_chef_application" id="isChefApplication" value="0">
+                            
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <p class="text-sm text-blue-700">
+                                    <i class="fas fa-info-circle mr-2"></i> Your application will be reviewed by our team. Once approved, you'll be able to add your own recipes to the platform!
+                                </p>
+                            </div>
                         </div>
 
                         <!-- Message -->
@@ -199,9 +239,12 @@
 
                         <!-- Submit Button -->
                         <button type="submit" 
-                                class="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors">
-                            Send Message
+                                class="w-full py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center justify-center">
+                            <i class="fas fa-paper-plane mr-2"></i> Send Message
                         </button>
+                        <p class="text-sm text-gray-500 mt-4 text-center">
+                            <i class="fas fa-envelope mr-1"></i> A copy of your message will be sent to your email for your records
+                        </p>
                     </form>
                 </div>
             </div>
