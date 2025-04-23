@@ -118,11 +118,9 @@
         <div class="container mx-auto px-4">
             <!-- Results Header -->
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-bold">Search Results</h2>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-600">Sort by:</span>
-                    <select class="bg-transparent text-gray-700 focus:outline-none">
-                        <option>Most Relevant</option>
+                <h2 class="text-2xl font-bold">{{ $recipes->total() }} Recipes Found</h2>
+                <div class="relative">
+                    <select class="appearance-none bg-gray-100 px-4 py-2 pr-8 rounded-full text-gray-700 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500">
                         <option>Most Popular</option>
                         <option>Newest</option>
                         <option>Cooking Time</option>
@@ -132,61 +130,56 @@
 
             <!-- Results Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Recipe Card Template -->
-                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                @forelse($recipes as $recipe)
+                <!-- Recipe Card -->
+                <a href="{{ route('recipes.show', $recipe) }}" class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" 
-                             alt="Creamy Pasta" 
+                        @if($recipe->image_path)
+                        <img src="{{ asset('storage/' . $recipe->image_path) }}" 
+                             alt="{{ $recipe->title }}" 
                              class="w-full h-48 object-cover">
-                        <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                            <i class="fas fa-star text-yellow-400 mr-1"></i>
-                            4.8
-                        </div>
+                        @else
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" 
+                             alt="{{ $recipe->title }}" 
+                             class="w-full h-48 object-cover">
+                        @endif
                         <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm">
                             <i class="far fa-heart text-red-500"></i>
                         </div>
                         <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm">
-                            <img src="https://flagcdn.com/w20/it.png" alt="Italy" class="h-4 w-4 mr-1.5 rounded-full object-cover border border-gray-200">
-                            Italian
+                            {{ $recipe->categories->first() ? $recipe->categories->first()->name : 'Uncategorized' }}
                         </div>
                     </div>
                     <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Creamy Garlic Mushroom Pasta</h3>
+                        <h3 class="font-bold text-gray-900 mb-2">{{ $recipe->title }}</h3>
                         <div class="flex items-center text-xs text-gray-500 mb-2">
                             <span class="flex items-center mr-3">
-                                <i class="far fa-clock mr-1"></i> 25 mins
+                                <i class="far fa-clock mr-1"></i> {{ $recipe->prep_time + $recipe->cook_time }} mins
                             </span>
                             <span class="flex items-center">
-                                <i class="fas fa-user-friends mr-1"></i> 4 servings
+                                <i class="fas fa-user-friends mr-1"></i> {{ $recipe->servings }} servings
                             </span>
                         </div>
                         <div class="flex justify-between items-center">
                             <div class="flex items-center">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Chef" class="w-6 h-6 rounded-full mr-2">
-                                <span class="text-xs text-gray-500">John Cook</span>
+                                <span class="text-xs text-gray-500">By: {{ $recipe->user->name }}</span>
                             </div>
-                            <span class="text-xs text-gray-500">2 days ago</span>
+                            <span class="text-xs text-gray-500">{{ $recipe->created_at->diffForHumans() }}</span>
                         </div>
                     </div>
+                </a>
+                @empty
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-search text-gray-300 text-5xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-500">No recipes found</h3>
+                    <p class="text-gray-400 mt-2">Try adjusting your search or filters</p>
                 </div>
-
-                <!-- Add more recipe cards here -->
+                @endforelse
             </div>
 
             <!-- Pagination -->
             <div class="mt-12 flex justify-center">
-                <nav class="flex items-center space-x-2">
-                    <button class="px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="px-4 py-2 rounded-full bg-red-500 text-white">1</button>
-                    <button class="px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">2</button>
-                    <button class="px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">3</button>
-                    <button class="px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">4</button>
-                    <button class="px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </nav>
+                {{ $recipes->links() }}
             </div>
         </div>
     </section>
