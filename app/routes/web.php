@@ -33,9 +33,7 @@ Route::get('/set-chef-role', function () {
 });
 
 // Public routes
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [RecipeController::class, 'welcome'])->name('welcome');
 
 Route::get('/about', function () {
     return view('about');
@@ -45,9 +43,12 @@ Route::get('/search', function () {
     return view('search');
 });
 
-Route::get('/recette', function () {
-    return view('recette');
-});
+// Recipe routes
+Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
+Route::get('/recette/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
+Route::get('/recipe/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipe.edit')->middleware('auth');
+Route::put('/recipe/{recipe}', [RecipeController::class, 'update'])->name('recipe.update')->middleware('auth');
+Route::delete('/recipe/{recipe}', [RecipeController::class, 'destroy'])->name('recipe.destroy')->middleware('auth');
 
 Route::get('/cuisines', function () {
     return view('cuisines');
@@ -99,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
             return app(AdminPage::class)->showadminpage();
         }
         return redirect('/')->with('error', 'You do not have permission to access the admin area.');
-    })->name('show.adminpage');
+    })->name('admin.page');
     
     // Admin routes with Gate checks
     Route::post('/admin/categories', function (\Illuminate\Http\Request $request) {
