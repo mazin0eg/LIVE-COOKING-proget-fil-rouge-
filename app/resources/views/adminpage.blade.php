@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Platea - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -172,7 +173,7 @@
                 document.getElementById('currentTime').textContent = formatted;
             }
             setInterval(updateTime, 1000);
-    
+
             // Show toast message
             function showToast(message, type = 'success') {
                 const toast = document.getElementById('toast');
@@ -186,7 +187,35 @@
                 toast.classList.remove('hidden');
                 setTimeout(() => toast.classList.add('hidden'), 3000);
             }
-    
+            
+            // Confirm recipe deletion
+            function confirmDeleteRecipe(recipeId) {
+                if (confirm('Are you sure you want to delete this recipe? This action cannot be undone.')) {
+                    // Create a form and submit it to delete the recipe
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/recipe/${recipeId}`;
+                    form.style.display = 'none';
+                    
+                    // Add CSRF token
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    form.appendChild(csrfToken);
+                    
+                    // Add method field for DELETE
+                    const methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'DELETE';
+                    form.appendChild(methodField);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+
             // Tab switching functionality
             function switchTab(tabName) {
                 // Update active tab
@@ -250,8 +279,8 @@
                             <i class="fas fa-utensils text-red-500 text-xl"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm text-gray-500">Total Recipes</p>
-                            <h3 class="text-2xl font-bold text-gray-900">245</h3>
+                            <h3 class="text-lg font-semibold">Total Recipes</h3>
+                            <p class="text-3xl font-bold">{{ $recipeCount }}</p>
                         </div>
                     </div>
                 </div>
@@ -272,8 +301,8 @@
                             <i class="fas fa-users text-green-500 text-xl"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm text-gray-500">Active Chefs</p>
-                            <h3 class="text-2xl font-bold text-gray-900">58</h3>
+                            <h3 class="text-lg font-semibold">Active Chefs</h3>
+                            <p class="text-3xl font-bold">{{ $chefCount }}</p>
                         </div>
                     </div>
                 </div>
@@ -294,41 +323,80 @@
             <div class="mb-12">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold">Recent Recipes</h2>
-                    
+                    <div class="flex items-center space-x-4">
+                        <form id="recipeFilterForm" class="flex items-center space-x-3">
+                            <div class="relative">
+                                <select id="chefFilter" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm">
+                                    <option value="">All Chefs</option>
+                                    @foreach($recipes->pluck('user')->unique() as $chef)
+                                        @if($chef)
+                                            <option value="{{ $chef->id }}">{{ $chef->name }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-user-chef text-gray-400"></i>
+                                </div>
+                            </div>
+                            <button type="button" id="clearFilters" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times-circle"></i> Clear
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="recipeContainer">
+                    @forelse($recipes as $recipe)
                     <!-- Recipe Card with Admin Controls -->
-                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm" data-chef-id="{{ $recipe->user_id ?? 0 }}">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" alt="Recipe" class="w-full h-48 object-cover">
+                            @if($recipe->image_path)
+                                <img src="{{ asset('storage/' . $recipe->image_path) }}" alt="{{ $recipe->title }}" class="w-full h-48 object-cover">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" alt="Recipe Placeholder" class="w-full h-48 object-cover">
+                            @endif
                             <div class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">Published</div>
                             <div class="absolute top-2 right-2 flex space-x-2">
-                                <button class="bg-white/90 backdrop-blur-sm rounded-full p-2 text-blue-500 shadow-sm">
+                                <a href="{{ route('recipe.edit', $recipe->id) }}" class="bg-white/90 backdrop-blur-sm rounded-full p-2 text-blue-500 shadow-sm">
                                     <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm">
+                                </a>
+                                <button onclick="confirmDeleteRecipe({{ $recipe->id }})" class="bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="p-4">
-                            <h3 class="font-bold text-gray-900 mb-2">Fresh Avocado & Citrus Salad</h3>
+                            <h3 class="font-bold text-gray-900 mb-2">{{ $recipe->title }}</h3>
                             <div class="flex items-center text-xs text-gray-500 mb-2">
                                 <span class="flex items-center mr-3">
-                                    <i class="far fa-clock mr-1"></i> 15 mins
+                                    <i class="far fa-clock mr-1"></i> {{ $recipe->prep_time + $recipe->cook_time }} mins
                                 </span>
                                 <span class="flex items-center">
-                                    <i class="fas fa-user-friends mr-1"></i> 2 servings
+                                    <i class="fas fa-user-friends mr-1"></i> {{ $recipe->servings }} servings
                                 </span>
                             </div>
                             <div class="flex items-center mt-3 pt-3 border-t">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Chef" class="w-6 h-6 rounded-full mr-2">
-                                <span class="text-xs text-gray-500">By John Cook</span>
-                                <span class="ml-auto text-xs text-gray-500">Added 2 days ago</span>
+                                @if($recipe->user)
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($recipe->user->name) }}&background=random" alt="Chef" class="w-6 h-6 rounded-full mr-2">
+                                    <span class="text-xs text-gray-500">By {{ $recipe->user->name }}</span>
+                                @else
+                                    <span class="text-xs text-gray-500">By Unknown Chef</span>
+                                @endif
+                                <span class="ml-auto text-xs text-gray-500">Added {{ $recipe->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
                     </div>
-                    <!-- Add more recipe cards here -->
+                    @empty
+                    <div class="col-span-4 p-8 text-center">
+                        <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                            <i class="fas fa-utensils text-gray-300 text-5xl mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">No Recipes Found</h3>
+                            <p class="text-gray-500 mb-4">There are no recipes in the system yet.</p>
+                            <a href="{{ route('recipe.create') }}" class="inline-block bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition-colors">
+                                <i class="fas fa-plus mr-2"></i> Add First Recipe
+                            </a>
+                        </div>
+                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -440,109 +508,80 @@
 
 </script>
 
-           <!-- Ingrediant Management -->
-<div class="bg-white rounded-lg shadow-sm mb-6">
-    <div class="p-6 border-b border-gray-100">
-        <div class="flex justify-between items-center">
-            <h2 class="text-xl font-bold">Ingrediants</h2>
-            <button onclick="openIngrediantModal()" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors">
-                Add Ingrediant
-            </button>
-        </div>
-    </div>
-    <div class="p-6">
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="text-left bg-gray-50">
-                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Recipes</th>
-                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-
-                @foreach ($ingrediants as $ingrediant)
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{$ingrediant->name}}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">45</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <form action="{{ route('delete.ingrediant', $ingrediant->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                @endforeach
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Add Ingrediant Modal -->
-<div id="ingrediantModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-gray-900">Add New Ingrediant</h3>
-            <button onclick="closeIngrediantModal()" class="text-gray-600 hover:text-gray-800">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <form id="ingrediantForm" action="{{ route('addingrediants') }}" method="POST" class="space-y-4">
-            @csrf
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Ingrediant Name</label>
-                <input 
-                    type="text" 
-                    id="name" 
-                    name="name"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="Enter ingrediant name"
-                    required
-                >
-            </div>
-
-            <div class="flex space-x-3 pt-4">
-                <button 
-                    type="button"
-                    onclick="closeIngrediantModal()"
-                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
-                >
-                    Cancel
-                </button>
-                <button 
-                    type="submit"
-                    class="flex-1 px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                >
-                    Add Ingrediant
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+           <!-- Chef Management section will be here -->
 
 <script>
-    function openIngrediantModal() {
-        document.getElementById('ingrediantModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeIngrediantModal() {
-        document.getElementById('ingrediantModal').classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('ingrediantModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeIngrediantModal();
+    // Recipe filtering by chef
+    document.addEventListener('DOMContentLoaded', function() {
+        const chefFilter = document.getElementById('chefFilter');
+        const clearFilters = document.getElementById('clearFilters');
+        const recipeCards = document.querySelectorAll('#recipeContainer .recipe-card');
+        
+        // Filter recipes by chef
+        chefFilter.addEventListener('change', function() {
+            const selectedChefId = this.value;
+            
+            recipeCards.forEach(card => {
+                const cardChefId = card.getAttribute('data-chef-id');
+                
+                if (!selectedChefId || cardChefId === selectedChefId) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show empty state if no recipes match the filter
+            checkEmptyState();
+        });
+        
+        // Clear all filters
+        clearFilters.addEventListener('click', function() {
+            chefFilter.value = '';
+            
+            recipeCards.forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // Hide empty state
+            document.getElementById('emptyRecipeState')?.classList.add('hidden');
+        });
+        
+        // Check if there are no visible recipes and show empty state
+        function checkEmptyState() {
+            let visibleRecipes = 0;
+            
+            recipeCards.forEach(card => {
+                if (card.style.display !== 'none') {
+                    visibleRecipes++;
+                }
+            });
+            
+            // Get or create empty state element
+            let emptyState = document.getElementById('emptyRecipeState');
+            
+            if (!emptyState) {
+                emptyState = document.createElement('div');
+                emptyState.id = 'emptyRecipeState';
+                emptyState.className = 'col-span-4 p-8 text-center hidden';
+                emptyState.innerHTML = `
+                    <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <i class="fas fa-filter text-gray-300 text-5xl mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No Recipes Match Your Filter</h3>
+                        <p class="text-gray-500 mb-4">Try changing your filter criteria or clear filters to see all recipes.</p>
+                    </div>
+                `;
+                document.getElementById('recipeContainer').appendChild(emptyState);
+            }
+            
+            if (visibleRecipes === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
         }
     });
 </script>
-
 
          <!-- Chef Validation -->
             <div class="bg-white rounded-lg shadow-sm mb-12">
