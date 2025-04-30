@@ -108,7 +108,24 @@
                         <!-- Cuisine -->
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Cuisine <span class="text-red-500">*</span></label>
-                            <input type="text" name="cuisine" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="e.g., Italian, French, Mexican" required>
+                            <select name="cuisine" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+                                <option value="">Select a cuisine</option>
+                                <option value="French">French</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Moroccan">Moroccan</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Arab">Arab</option>
+                                <option value="Egyptian">Egyptian</option>
+                                <option value="Nigerian">Nigerian</option>
+                                <option value="Indian">Indian</option>
+                                <option value="Mexican">Mexican</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="Greek">Greek</option>
+                                <option value="Thai">Thai</option>
+                                <option value="Turkish">Turkish</option>
+                                <option value="American">American</option>
+                            </select>
                             @error('cuisine')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
