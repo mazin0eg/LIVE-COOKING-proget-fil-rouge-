@@ -3,8 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\categoriesController;
 use App\Http\Controllers\AdminPage;
+use App\Http\Controllers\CookingController;
 use App\Http\Controllers\ingrediantsController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -39,20 +41,22 @@ Route::get('/about', function () {
     return view('about');
 });
 
-Route::get('/search', function () {
-    return view('search');
-});
+// Recipe search routes
+Route::get('/search', [RecipeController::class, 'search'])->name('recipes.search');
+Route::post('/search', [RecipeController::class, 'search'])->name('recipes.search.post');
+Route::get('/cuisine/{cuisine}', [RecipeController::class, 'byCuisine'])->name('recipes.by-cuisine');
 
 // Recipe routes
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
 Route::get('/recette/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
+Route::get('/start-cooking/{recipe}', [RecipeController::class, 'startCooking'])->name('recipes.start-cooking');
 Route::get('/recipe/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipe.edit')->middleware('auth');
 Route::put('/recipe/{recipe}', [RecipeController::class, 'update'])->name('recipe.update')->middleware('auth');
 Route::delete('/recipe/{recipe}', [RecipeController::class, 'destroy'])->name('recipe.destroy')->middleware('auth');
 
 Route::get('/cuisines', function () {
     return view('cuisines');
-});
+})->name('cuisines');
 
 // Auth routes
 Route::get('/login', [AuthController::class, 'ShowLogin'])->name('show.login');
@@ -67,9 +71,10 @@ Route::post('/contact', [ContactController::class, 'submitContactForm'])->name('
 
 // Auth required routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', function () {
-        return view('auth.profile');
-    });
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     
     // Chef only routes using Gate instead of middleware
     Route::get('/add', function () {
@@ -91,6 +96,13 @@ Route::middleware(['auth'])->group(function () {
         
         return redirect()->route('contact')->with('info', 'You need to be approved as a chef to add recipes.');
     })->name('recipe.store');
+});
+
+// Cooking tracking routes
+Route::middleware(['auth'])->prefix('cooking')->name('cooking.')->group(function () {
+    Route::post('/start/{recipe}', [CookingController::class, 'startCooking'])->name('start');
+    Route::put('/update/{cooking}', [CookingController::class, 'updateProgress'])->name('update');
+    Route::put('/complete/{cooking}', [CookingController::class, 'completeCooking'])->name('complete');
 });
 
 // Admin only routes
