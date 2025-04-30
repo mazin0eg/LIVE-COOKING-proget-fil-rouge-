@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platea - Contact Us</title>
+    <title>CookNow - Contact Us</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -81,9 +81,9 @@
                         <i class="fas fa-envelope text-2xl text-red-500"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Email Us</h3>
-                    <p class="text-gray-600">support@platea.com</p>
-                    <p class="text-gray-600">careers@platea.com</p>
-                    <p class="text-gray-600">press@platea.com</p>
+                    <p class="text-gray-600">support@cooknow.com</p>
+                    <p class="text-gray-600">careers@cooknow.com</p>
+                    <p class="text-gray-600">press@cooknow.com</p>
                 </div>
             </div>
 
@@ -112,7 +112,7 @@
                     
                     @if($errors->any())
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                        <p class="font-bold">Please correct the following errors:</p>
+                        <p>Please fix these errors:</p>
                         <ul class="list-disc ml-5 mt-2">
                             @foreach($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -129,9 +129,9 @@
                                 <label class="block text-gray-700 font-medium mb-2">First Name</label>
                                 <input type="text" 
                                        name="first_name"
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                       placeholder="Enter your first name"
-                                       value="{{ Auth::check() ? Auth::user()->first_name : old('first_name') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                       placeholder="Your first name"
+                                       value="{{ old('first_name', Auth::check() ? Auth::user()->first_name : '') }}"
                                        required>
                             </div>
                             
@@ -140,37 +140,37 @@
                                 <label class="block text-gray-700 font-medium mb-2">Last Name</label>
                                 <input type="text" 
                                        name="last_name"
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                       placeholder="Enter your last name"
-                                       value="{{ Auth::check() ? Auth::user()->last_name : old('last_name') }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                       placeholder="Your last name"
+                                       value="{{ old('last_name', Auth::check() ? Auth::user()->last_name : '') }}"
                                        required>
                             </div>
                         </div>
-
+                        
                         <!-- Email -->
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Email Address</label>
                             <input type="email" 
                                    name="email"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                   placeholder="Enter your email address"
-                                   value="{{ Auth::check() ? Auth::user()->email : old('email') }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                   placeholder="Your email address"
+                                   value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}"
                                    required>
                         </div>
-
+                        
                         <!-- Subject -->
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Subject</label>
                             <select name="subject" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                                     id="subjectSelect"
                                     required>
-                                <option value="general">General Inquiry</option>
-                                <option value="support">Customer Support</option>
-                                <option value="feedback">Feedback</option>
-                                <option value="chef_application" {{ Auth::check() && Auth::user()->role === 'cooker' ? 'selected' : '' }}>Chef Application</option>
-                                <option value="recipe_suggestion">Recipe Suggestion</option>
-                                <option value="other">Other</option>
+                                <option value="general" {{ old('subject') == 'general' ? 'selected' : '' }}>General Inquiry</option>
+                                <option value="support" {{ old('subject') == 'support' ? 'selected' : '' }}>Customer Support</option>
+                                <option value="feedback" {{ old('subject') == 'feedback' ? 'selected' : '' }}>Feedback</option>
+                                <option value="chef_application" {{ old('subject') == 'chef_application' || (Auth::check() && Auth::user()->role === 'cooker') ? 'selected' : '' }}>Chef Application</option>
+                                <option value="recipe_suggestion" {{ old('subject') == 'recipe_suggestion' ? 'selected' : '' }}>Recipe Suggestion</option>
+                                <option value="other" {{ old('subject') == 'other' ? 'selected' : '' }}>Other</option>
                             </select>
                             @if(!Auth::check())
                                 <p class="text-sm text-gray-500 mt-2"><i class="fas fa-info-circle mr-1"></i> You must be logged in to apply as a chef.</p>
@@ -188,24 +188,26 @@
                                 <label class="block text-gray-700 font-medium mb-2">Years of Experience <span class="text-red-500">*</span></label>
                                 <input type="text" 
                                        name="experience"
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                       placeholder="e.g., 5 years">
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                       placeholder="e.g., 5 years"
+                                       value="{{ old('experience') }}">
                             </div>
                             
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Cuisine Speciality <span class="text-red-500">*</span></label>
                                 <input type="text" 
                                        name="speciality"
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                       placeholder="e.g., Italian, French, etc.">
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                       placeholder="e.g., Italian, French, etc."
+                                       value="{{ old('speciality') }}">
                             </div>
                             
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Why do you want to become a chef? <span class="text-red-500">*</span></label>
                                 <textarea name="chef_reason" 
                                           rows="3"
-                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                          placeholder="Tell us why you're passionate about sharing your recipes..."></textarea>
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                          placeholder="Tell us why you're passionate about sharing your recipes...">{{ old('chef_reason') }}</textarea>
                             </div>
                             
                             <input type="hidden" name="is_chef_application" id="isChefApplication" value="0">
@@ -220,11 +222,11 @@
                         <!-- Message -->
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Message</label>
-                            <textarea rows="6" 
-                                      name="message"
-                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                      placeholder="Enter your message"
-                                      required></textarea>
+                            <textarea name="message" 
+                                      rows="5" 
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                      placeholder="Your message here..."
+                                      required>{{ old('message') }}</textarea>
                         </div>
 
                         <!-- Consent Checkbox -->
@@ -322,6 +324,12 @@
                 isChefApplication.value = '0';
             }
         });
+        
+        // Initialize chef fields visibility on page load
+        if (document.getElementById('subjectSelect').value === 'chef_application') {
+            document.getElementById('chefFields').classList.remove('hidden');
+            document.getElementById('isChefApplication').value = '1';
+        }
     </script>
 </body>
 </html>
