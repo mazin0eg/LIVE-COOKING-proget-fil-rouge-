@@ -1,0 +1,882 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\Recipe;
+use App\Models\RecipeIngredient;
+use App\Models\RecipeStep;
+use App\Models\RecipeEquipment;
+use App\Models\User;
+use App\Models\categories;
+
+class RecipeSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Get or create a chef user
+        $chef = User::where('role', 'chef')->first();
+        if (!$chef) {
+            $chef = User::create([
+                'first_name' => 'Chef',
+                'last_name' => 'User',
+                'email' => 'chef@example.com',
+                'password' => bcrypt('password'),
+                'role' => 'chef',
+            ]);
+        }
+        
+        // Get or create categories
+        $mainCourse = categories::firstOrCreate(['name' => 'Main Course']);
+        $appetizer = categories::firstOrCreate(['name' => 'Appetizer']);
+        $dessert = categories::firstOrCreate(['name' => 'Dessert']);
+        $breakfast = categories::firstOrCreate(['name' => 'Breakfast']);
+        $soup = categories::firstOrCreate(['name' => 'Soup']);
+        
+        // Create recipes for different cuisines
+        $this->createItalianRecipes($chef, $mainCourse, $appetizer, $dessert);
+        $this->createJapaneseRecipes($chef, $mainCourse, $appetizer, $soup);
+        $this->createMexicanRecipes($chef, $mainCourse, $appetizer);
+        $this->createMoroccanRecipes($chef, $mainCourse, $soup);
+        $this->createFrenchRecipes($chef, $mainCourse, $dessert);
+        $this->createIndianRecipes($chef, $mainCourse, $appetizer);
+        $this->createChineseRecipes($chef, $mainCourse, $soup);
+        $this->createThaiRecipes($chef, $mainCourse, $soup);
+        $this->createGreekRecipes($chef, $mainCourse, $appetizer);
+        $this->createTurkishRecipes($chef, $mainCourse, $appetizer);
+    }
+    
+    // Helper method to create a recipe with all related data
+    private function createRecipe($data, $chef, $category, $ingredients, $steps, $equipment)
+    {
+        $recipe = Recipe::create([
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'user_id' => $chef->id,
+            'prep_time' => $data['prep_time'],
+            'cook_time' => $data['cook_time'],
+            'servings' => $data['servings'],
+            'difficulty' => $data['difficulty'],
+            'cuisine' => $data['cuisine'],
+            'image_path' => $data['image_path'] ?? null,
+        ]);
+        
+        $recipe->categories()->attach($category->id);
+        
+        // Add ingredients
+        foreach ($ingredients as $ingredient) {
+            RecipeIngredient::create([
+                'recipe_id' => $recipe->id,
+                'name' => $ingredient['name'],
+                'quantity' => $ingredient['quantity'],
+                'unit' => $ingredient['unit'],
+            ]);
+        }
+        
+        // Add steps
+        for ($i = 0; $i < count($steps); $i++) {
+            RecipeStep::create([
+                'recipe_id' => $recipe->id,
+                'description' => $steps[$i],
+                'order' => $i + 1,
+            ]);
+        }
+        
+        // Add equipment
+        foreach ($equipment as $item) {
+            RecipeEquipment::create([
+                'recipe_id' => $recipe->id,
+                'name' => $item,
+            ]);
+        }
+        
+        return $recipe;
+    }
+    
+    // Cuisine-specific methods will be implemented separately
+    private function createItalianRecipes($chef, $mainCourse, $appetizer, $dessert) {
+        // Spaghetti Carbonara (Main Course)
+        $carbonaraData = [
+            'title' => 'Authentic Spaghetti Carbonara',
+            'description' => 'A classic Roman pasta dish made with eggs, Pecorino Romano cheese, guanciale, and black pepper. No cream is used in the authentic version!',
+            'prep_time' => 15,
+            'cook_time' => 15,
+            'servings' => 4,
+            'difficulty' => 'medium',
+            'cuisine' => 'Italian',
+            'image_path' => 'recipe-images/carbonara.jpg',
+        ];
+        
+        $carbonaraIngredients = [
+            ['name' => 'Spaghetti', 'quantity' => '400', 'unit' => 'g'],
+            ['name' => 'Guanciale (or Pancetta)', 'quantity' => '150', 'unit' => 'g'],
+            ['name' => 'Egg Yolks', 'quantity' => '6', 'unit' => ''],
+            ['name' => 'Whole Egg', 'quantity' => '1', 'unit' => ''],
+            ['name' => 'Pecorino Romano Cheese', 'quantity' => '50', 'unit' => 'g'],
+            ['name' => 'Black Pepper', 'quantity' => '2', 'unit' => 'tsp'],
+            ['name' => 'Salt', 'quantity' => '1', 'unit' => 'tsp'],
+        ];
+        
+        $carbonaraSteps = [
+            'Bring a large pot of salted water to a boil for the pasta.',
+            'Cut the guanciale into small cubes or thin strips.',
+            'In a bowl, whisk together the egg yolks, whole egg, grated Pecorino Romano, and plenty of freshly ground black pepper.',
+            'In a large pan, cook the guanciale over medium heat until crispy and the fat has rendered, about 8-10 minutes.',
+            'Meanwhile, cook the spaghetti in the boiling water until al dente (usually 1-2 minutes less than package instructions).',
+            'Reserve 1/2 cup of pasta water, then drain the pasta.',
+            'Remove the guanciale pan from heat and add the drained pasta, tossing quickly to coat in the fat.',
+            'Quickly add the egg mixture to the hot pasta, stirring constantly. The residual heat will cook the eggs into a creamy sauce.',
+            'If the sauce is too thick, add a splash of the reserved pasta water to loosen it.',
+            'Serve immediately with extra grated cheese and black pepper on top.'
+        ];
+        
+        $carbonaraEquipment = ['Large pot', 'Large frying pan', 'Mixing bowl', 'Whisk', 'Colander', 'Cheese grater'];
+        
+        $this->createRecipe($carbonaraData, $chef, $mainCourse, $carbonaraIngredients, $carbonaraSteps, $carbonaraEquipment);
+        
+        // Risotto ai Funghi Porcini (Main Course)
+        $risottoData = [
+            'title' => 'Risotto ai Funghi Porcini',
+            'description' => 'A creamy northern Italian rice dish made with porcini mushrooms, white wine, and Parmesan cheese. The secret is in the slow addition of broth and constant stirring.',
+            'prep_time' => 15,
+            'cook_time' => 30,
+            'servings' => 4,
+            'difficulty' => 'medium',
+            'cuisine' => 'Italian',
+            'image_path' => 'recipe-images/risotto.jpg',
+        ];
+        
+        $risottoIngredients = [
+            ['name' => 'Arborio or Carnaroli Rice', 'quantity' => '320', 'unit' => 'g'],
+            ['name' => 'Dried Porcini Mushrooms', 'quantity' => '30', 'unit' => 'g'],
+            ['name' => 'Fresh Mushrooms', 'quantity' => '200', 'unit' => 'g'],
+            ['name' => 'Onion', 'quantity' => '1', 'unit' => 'small'],
+            ['name' => 'Garlic', 'quantity' => '2', 'unit' => 'cloves'],
+            ['name' => 'Vegetable Broth', 'quantity' => '1', 'unit' => 'liter'],
+            ['name' => 'Dry White Wine', 'quantity' => '100', 'unit' => 'ml'],
+            ['name' => 'Butter', 'quantity' => '50', 'unit' => 'g'],
+            ['name' => 'Parmesan Cheese', 'quantity' => '50', 'unit' => 'g'],
+            ['name' => 'Extra Virgin Olive Oil', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Fresh Parsley', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Salt and Pepper', 'quantity' => '', 'unit' => 'to taste'],
+        ];
+        
+        $risottoSteps = [
+            'Soak the dried porcini mushrooms in warm water for 30 minutes. Strain and reserve the soaking liquid. Chop the rehydrated mushrooms.',
+            'Clean and slice the fresh mushrooms.',
+            'Finely chop the onion and garlic.',
+            'In a large pot, heat the vegetable broth and keep it simmering.',
+            'In a large, heavy-bottomed pan, heat the olive oil and half the butter. Add the onion and sauté until translucent.',
+            'Add the garlic and cook for another minute.',
+            'Add the fresh and rehydrated mushrooms, and cook until they release their moisture and begin to brown.',
+            'Add the rice and toast it for 2-3 minutes, stirring constantly.',
+            'Pour in the white wine and stir until it evaporates.',
+            'Begin adding the hot broth one ladle at a time, stirring frequently. Add the mushroom soaking liquid (being careful to leave any grit behind).',
+            'Continue adding broth and stirring until the rice is creamy but still al dente, about 18-20 minutes.',
+            'Remove from heat and stir in the remaining butter and grated Parmesan cheese.',
+            'Cover and let rest for 2 minutes.',
+            'Garnish with chopped parsley and serve immediately.'
+        ];
+        
+        $risottoEquipment = ['Large pot', 'Heavy-bottomed pan', 'Wooden spoon', 'Ladle', 'Cheese grater'];
+        
+        $this->createRecipe($risottoData, $chef, $mainCourse, $risottoIngredients, $risottoSteps, $risottoEquipment);
+        
+        // Bruschetta (Appetizer)
+        $bruschettaData = [
+            'title' => 'Classic Tomato Bruschetta',
+            'description' => 'A simple and delicious Italian appetizer featuring toasted bread topped with fresh tomatoes, basil, garlic, and olive oil.',
+            'prep_time' => 15,
+            'cook_time' => 5,
+            'servings' => 6,
+            'difficulty' => 'easy',
+            'cuisine' => 'Italian',
+            'image_path' => 'recipe-images/bruschetta.jpg',
+        ];
+        
+        $bruschettaIngredients = [
+            ['name' => 'Crusty Italian Bread or Baguette', 'quantity' => '1', 'unit' => ''],
+            ['name' => 'Ripe Tomatoes', 'quantity' => '6', 'unit' => 'medium'],
+            ['name' => 'Fresh Basil Leaves', 'quantity' => '10', 'unit' => ''],
+            ['name' => 'Garlic Cloves', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'Extra Virgin Olive Oil', 'quantity' => '4', 'unit' => 'tbsp'],
+            ['name' => 'Balsamic Vinegar', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Salt', 'quantity' => '1/2', 'unit' => 'tsp'],
+            ['name' => 'Black Pepper', 'quantity' => '1/4', 'unit' => 'tsp'],
+        ];
+        
+        $bruschettaSteps = [
+            'Preheat the oven to 425°F (220°C) or heat a grill pan.',
+            'Slice the bread into 1/2-inch thick slices.',
+            'Dice the tomatoes and place in a bowl.',
+            'Chiffonade the basil leaves and add to the tomatoes.',
+            'Mince one garlic clove and add to the tomato mixture.',
+            'Add olive oil, balsamic vinegar, salt, and pepper to the tomato mixture and stir gently.',
+            'Toast the bread slices in the oven or on the grill pan until golden brown, about 5 minutes.',
+            'Cut the remaining garlic clove in half and rub the cut side on one side of each toasted bread slice.',
+            'Top each bread slice with the tomato mixture.',
+            'Drizzle with a little extra olive oil and serve immediately.'
+        ];
+        
+        $bruschettaEquipment = ['Oven or grill pan', 'Mixing bowl', 'Knife', 'Cutting board'];
+        
+        $this->createRecipe($bruschettaData, $chef, $appetizer, $bruschettaIngredients, $bruschettaSteps, $bruschettaEquipment);
+        
+        // Tiramisu (Dessert)
+        $tiramisuData = [
+            'title' => 'Classic Tiramisu',
+            'description' => 'A beloved Italian dessert made with layers of coffee-soaked ladyfingers and a rich mascarpone cream, dusted with cocoa powder.',
+            'prep_time' => 30,
+            'cook_time' => 0,
+            'servings' => 8,
+            'difficulty' => 'medium',
+            'cuisine' => 'Italian',
+            'image_path' => 'recipe-images/tiramisu.jpg',
+        ];
+        
+        $tiramisuIngredients = [
+            ['name' => 'Egg Yolks', 'quantity' => '6', 'unit' => ''],
+            ['name' => 'Granulated Sugar', 'quantity' => '150', 'unit' => 'g'],
+            ['name' => 'Mascarpone Cheese', 'quantity' => '500', 'unit' => 'g'],
+            ['name' => 'Strong Espresso Coffee (cooled)', 'quantity' => '300', 'unit' => 'ml'],
+            ['name' => 'Ladyfinger Biscuits', 'quantity' => '200', 'unit' => 'g'],
+            ['name' => 'Unsweetened Cocoa Powder', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Dark Rum or Marsala Wine (optional)', 'quantity' => '2', 'unit' => 'tbsp'],
+        ];
+        
+        $tiramisuSteps = [
+            'In a large bowl, beat the egg yolks with sugar until pale and creamy.',
+            'Add the mascarpone cheese and gently fold until smooth and well combined.',
+            'If using, add the rum or Marsala to the cooled coffee.',
+            'Quickly dip each ladyfinger into the coffee mixture (don\'t soak them or they\'ll fall apart) and arrange in a single layer in a 9x13 inch dish.',
+            'Spread half of the mascarpone mixture over the ladyfingers.',
+            'Repeat with another layer of coffee-dipped ladyfingers and the remaining mascarpone mixture.',
+            'Dust the top generously with cocoa powder.',
+            'Cover and refrigerate for at least 4 hours, preferably overnight.',
+            'Dust with additional cocoa powder just before serving if desired.'
+        ];
+        
+        $tiramisuEquipment = ['Large mixing bowl', 'Electric mixer or whisk', 'Spatula', '9x13 inch dish', 'Sieve for cocoa powder'];
+        
+        $this->createRecipe($tiramisuData, $chef, $dessert, $tiramisuIngredients, $tiramisuSteps, $tiramisuEquipment);
+    }
+    
+    private function createJapaneseRecipes($chef, $mainCourse, $appetizer, $soup) {
+        // Tonkotsu Ramen (Main Course)
+        $ramenData = [
+            'title' => 'Tonkotsu Ramen',
+            'description' => 'A rich, pork-based noodle soup that originated in Fukuoka, Japan. The broth is creamy white from boiling pork bones for many hours, creating a deep, complex flavor.',
+            'prep_time' => 30,
+            'cook_time' => 240,
+            'servings' => 4,
+            'difficulty' => 'hard',
+            'cuisine' => 'Japanese',
+            'image_path' => 'recipe-images/tonkotsu-ramen.jpg',
+        ];
+        
+        $ramenIngredients = [
+            ['name' => 'Pork Bones (preferably trotters and neck bones)', 'quantity' => '2', 'unit' => 'kg'],
+            ['name' => 'Pork Belly', 'quantity' => '500', 'unit' => 'g'],
+            ['name' => 'Ramen Noodles', 'quantity' => '400', 'unit' => 'g'],
+            ['name' => 'Ginger', 'quantity' => '30', 'unit' => 'g'],
+            ['name' => 'Garlic', 'quantity' => '1', 'unit' => 'head'],
+            ['name' => 'Green Onions', 'quantity' => '4', 'unit' => ''],
+            ['name' => 'Soft-Boiled Eggs', 'quantity' => '4', 'unit' => ''],
+            ['name' => 'Soy Sauce', 'quantity' => '60', 'unit' => 'ml'],
+            ['name' => 'Mirin', 'quantity' => '60', 'unit' => 'ml'],
+            ['name' => 'Sake', 'quantity' => '60', 'unit' => 'ml'],
+            ['name' => 'Sesame Oil', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Bean Sprouts', 'quantity' => '100', 'unit' => 'g'],
+            ['name' => 'Nori Sheets', 'quantity' => '4', 'unit' => ''],
+            ['name' => 'Salt', 'quantity' => '', 'unit' => 'to taste'],
+        ];
+        
+        $ramenSteps = [
+            'Clean the pork bones by soaking in cold water for 1 hour, then rinse thoroughly.',
+            'In a large pot, add the bones and cover with cold water. Bring to a boil and simmer for 5 minutes.',
+            'Drain and rinse the bones to remove impurities. Clean the pot.',
+            'Return the bones to the clean pot and add 5 liters of water. Bring to a boil, then reduce to a low simmer.',
+            'Add the sliced ginger, crushed garlic cloves, and white parts of green onions to the broth.',
+            'Simmer uncovered for at least 4 hours (preferably 6-8 hours), occasionally skimming off any scum that rises to the surface.',
+            'For the chashu (pork belly): In a separate pot, combine soy sauce, mirin, sake, and 1 cup water. Add the pork belly and bring to a simmer.',
+            'Cover and cook the pork belly on low heat for 2 hours, turning occasionally, until tender.',
+            'For marinated eggs: Soft boil eggs for 6-7 minutes, then cool in ice water and peel. Marinate in some of the chashu cooking liquid for at least 2 hours.',
+            'Strain the tonkotsu broth through a fine-mesh sieve.',
+            'Season the broth with salt to taste.',
+            'Cook the ramen noodles according to package instructions.',
+            'To serve: Place cooked noodles in bowls, ladle hot broth over them. Top with sliced chashu, halved marinated egg, sliced green onions, bean sprouts, and a sheet of nori.',
+            'Finish with a drizzle of sesame oil.'
+        ];
+        
+        $ramenEquipment = ['Large stock pot', 'Fine-mesh sieve', 'Medium pot for chashu', 'Small pot for eggs', 'Ladle', 'Sharp knife'];
+        
+        $this->createRecipe($ramenData, $chef, $mainCourse, $ramenIngredients, $ramenSteps, $ramenEquipment);
+        
+        // Sushi Rolls (Main Course)
+        $sushiData = [
+            'title' => 'Homemade Sushi Rolls',
+            'description' => 'Learn to make beautiful and delicious sushi rolls at home with this step-by-step recipe. Perfect for a special dinner or gathering with friends.',
+            'prep_time' => 45,
+            'cook_time' => 30,
+            'servings' => 4,
+            'difficulty' => 'medium',
+            'cuisine' => 'Japanese',
+            'image_path' => 'recipe-images/sushi-rolls.jpg',
+        ];
+        
+        $sushiIngredients = [
+            ['name' => 'Sushi Rice', 'quantity' => '2', 'unit' => 'cups'],
+            ['name' => 'Water', 'quantity' => '2', 'unit' => 'cups'],
+            ['name' => 'Rice Vinegar', 'quantity' => '3', 'unit' => 'tbsp'],
+            ['name' => 'Sugar', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Salt', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Nori Sheets', 'quantity' => '6', 'unit' => ''],
+            ['name' => 'Sushi-Grade Salmon', 'quantity' => '200', 'unit' => 'g'],
+            ['name' => 'Sushi-Grade Tuna', 'quantity' => '200', 'unit' => 'g'],
+            ['name' => 'Avocado', 'quantity' => '1', 'unit' => 'large'],
+            ['name' => 'Cucumber', 'quantity' => '1', 'unit' => 'medium'],
+            ['name' => 'Wasabi Paste', 'quantity' => '2', 'unit' => 'tsp'],
+            ['name' => 'Soy Sauce', 'quantity' => '60', 'unit' => 'ml'],
+            ['name' => 'Pickled Ginger', 'quantity' => '50', 'unit' => 'g'],
+        ];
+        
+        $sushiSteps = [
+            'Rinse the sushi rice in cold water until the water runs clear. Drain well.',
+            'Combine the rice and water in a medium saucepan. Bring to a boil, then reduce heat to low, cover, and simmer for 20 minutes.',
+            'Remove from heat and let stand, covered, for 10 minutes.',
+            'In a small saucepan, combine rice vinegar, sugar, and salt. Heat until sugar dissolves. Cool.',
+            'Transfer the rice to a large wooden or glass bowl. Drizzle the vinegar mixture over the rice and fold gently with a rice paddle or wooden spoon to combine. Fan the rice as you fold to cool it quickly.',
+            'Cover the rice with a damp cloth to prevent it from drying out.',
+            'Prepare your fillings: slice the fish into long, thin strips. Cut avocado and cucumber into thin strips.',
+            'Place a bamboo sushi mat on a clean work surface with the slats running horizontally. Place a sheet of plastic wrap on top of the mat (optional, but helps prevent sticking).',
+            'Place a sheet of nori, shiny side down, on the mat.',
+            'With wet hands, take a handful of rice and spread it evenly over the nori, leaving a 1-inch border at the top edge.',
+            'Spread a small amount of wasabi in a line across the center of the rice.',
+            'Arrange your fillings in a line across the center of the rice.',
+            'Using the bamboo mat, roll the sushi away from you, applying gentle pressure to create a compact roll. Use the border without rice to seal the roll.',
+            'With a sharp, wet knife, slice the roll into 6-8 pieces.',
+            'Serve with soy sauce, wasabi, and pickled ginger.'
+        ];
+        
+        $sushiEquipment = ['Rice cooker or saucepan', 'Bamboo sushi mat', 'Sharp knife', 'Wooden or glass bowl', 'Rice paddle or wooden spoon'];
+        
+        $this->createRecipe($sushiData, $chef, $mainCourse, $sushiIngredients, $sushiSteps, $sushiEquipment);
+        
+        // Miso Soup (Soup)
+        $misoData = [
+            'title' => 'Traditional Miso Soup',
+            'description' => 'A comforting Japanese soup made with dashi stock and miso paste. Simple yet packed with umami flavor, this soup is a staple in Japanese cuisine.',
+            'prep_time' => 10,
+            'cook_time' => 15,
+            'servings' => 4,
+            'difficulty' => 'easy',
+            'cuisine' => 'Japanese',
+            'image_path' => 'recipe-images/miso-soup.jpg',
+        ];
+        
+        $misoIngredients = [
+            ['name' => 'Dashi Stock (or 4 cups water + dashi powder)', 'quantity' => '1', 'unit' => 'liter'],
+            ['name' => 'Miso Paste (preferably awase/mixed miso)', 'quantity' => '4', 'unit' => 'tbsp'],
+            ['name' => 'Tofu (firm)', 'quantity' => '200', 'unit' => 'g'],
+            ['name' => 'Wakame Seaweed (dried)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Green Onions', 'quantity' => '2', 'unit' => ''],
+        ];
+        
+        $misoSteps = [
+            'If using dried wakame, soak it in cold water for 5 minutes until rehydrated, then drain.',
+            'Cut the tofu into 1/2-inch cubes.',
+            'Thinly slice the green onions.',
+            'In a medium saucepan, bring the dashi stock to a simmer over medium heat. Do not boil.',
+            'Place the miso paste in a small bowl. Add a ladleful of hot dashi and whisk until the miso is dissolved.',
+            'Pour the miso mixture back into the saucepan with the remaining dashi. Stir gently.',
+            'Add the tofu cubes and wakame. Simmer for 2 minutes, but do not boil (boiling will destroy the flavor and aroma of the miso).',
+            'Remove from heat and garnish with sliced green onions.',
+            'Serve immediately.'
+        ];
+        
+        $misoEquipment = ['Medium saucepan', 'Small bowl', 'Whisk', 'Ladle'];
+        
+        $this->createRecipe($misoData, $chef, $soup, $misoIngredients, $misoSteps, $misoEquipment);
+        
+        // Gyoza (Appetizer)
+        $gyozaData = [
+            'title' => 'Japanese Gyoza Dumplings',
+            'description' => 'Crispy on the bottom and juicy inside, these Japanese dumplings are filled with a savory mixture of ground pork, cabbage, and seasonings.',
+            'prep_time' => 45,
+            'cook_time' => 15,
+            'servings' => 6,
+            'difficulty' => 'medium',
+            'cuisine' => 'Japanese',
+            'image_path' => 'recipe-images/gyoza.jpg',
+        ];
+        
+        $gyozaIngredients = [
+            ['name' => 'Gyoza Wrappers', 'quantity' => '40', 'unit' => ''],
+            ['name' => 'Ground Pork', 'quantity' => '500', 'unit' => 'g'],
+            ['name' => 'Cabbage', 'quantity' => '300', 'unit' => 'g'],
+            ['name' => 'Green Onions', 'quantity' => '4', 'unit' => ''],
+            ['name' => 'Garlic', 'quantity' => '3', 'unit' => 'cloves'],
+            ['name' => 'Ginger', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Soy Sauce', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Sesame Oil', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Salt', 'quantity' => '1/2', 'unit' => 'tsp'],
+            ['name' => 'White Pepper', 'quantity' => '1/4', 'unit' => 'tsp'],
+            ['name' => 'Vegetable Oil', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Water', 'quantity' => '100', 'unit' => 'ml'],
+            ['name' => 'For Dipping Sauce:', 'quantity' => '', 'unit' => ''],
+            ['name' => 'Soy Sauce', 'quantity' => '60', 'unit' => 'ml'],
+            ['name' => 'Rice Vinegar', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Chili Oil (optional)', 'quantity' => '1', 'unit' => 'tsp'],
+        ];
+        
+        $gyozaSteps = [
+            'Finely chop the cabbage and place it in a colander. Sprinkle with 1/2 teaspoon salt and let sit for 15 minutes to draw out moisture.',
+            'Squeeze the cabbage firmly to remove excess water.',
+            'Finely chop the green onions, garlic, and ginger.',
+            'In a large bowl, combine the ground pork, drained cabbage, green onions, garlic, ginger, soy sauce, sesame oil, and white pepper. Mix well with your hands until sticky.',
+            'Place a gyoza wrapper in your palm and add about 1 tablespoon of filling to the center.',
+            'Moisten the edge of the wrapper with water using your fingertip.',
+            'Fold the wrapper in half over the filling and pinch the center together.',
+            'Create pleats on one side of the wrapper, pressing them against the flat side to seal the dumpling.',
+            'Repeat with remaining wrappers and filling.',
+            'Heat vegetable oil in a large non-stick skillet over medium-high heat.',
+            'Place the gyoza flat-side down in the skillet, fitting as many as possible without touching.',
+            'Fry until the bottoms are golden brown, about 3 minutes.',
+            'Add water to the skillet and immediately cover with a lid. Reduce heat to medium and steam for about 3 minutes until the water has evaporated.',
+            'Remove the lid and continue cooking for another minute to crisp up the bottoms again.',
+            'For the dipping sauce, combine soy sauce, rice vinegar, and chili oil if using.',
+            'Serve gyoza hot with the dipping sauce.'
+        ];
+        
+        $gyozaEquipment = ['Large mixing bowl', 'Non-stick skillet with lid', 'Colander', 'Cutting board', 'Knife'];
+        
+        $this->createRecipe($gyozaData, $chef, $appetizer, $gyozaIngredients, $gyozaSteps, $gyozaEquipment);
+    }
+    
+    private function createMexicanRecipes($chef, $mainCourse, $appetizer) {
+        // Authentic Beef Tacos (Main Course)
+        $tacosData = [
+            'title' => 'Authentic Beef Tacos',
+            'description' => 'Traditional Mexican tacos with seasoned beef, fresh toppings, and homemade salsa. Served on soft corn tortillas for an authentic taste of Mexico.',
+            'prep_time' => 20,
+            'cook_time' => 30,
+            'servings' => 6,
+            'difficulty' => 'medium',
+            'cuisine' => 'Mexican',
+            'image_path' => 'recipe-images/beef-tacos.jpg',
+        ];
+        
+        $tacosIngredients = [
+            ['name' => 'Corn Tortillas', 'quantity' => '12', 'unit' => ''],
+            ['name' => 'Beef Skirt or Flank Steak', 'quantity' => '750', 'unit' => 'g'],
+            ['name' => 'White Onion', 'quantity' => '1', 'unit' => 'large'],
+            ['name' => 'Garlic', 'quantity' => '4', 'unit' => 'cloves'],
+            ['name' => 'Lime', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'Fresh Cilantro', 'quantity' => '1', 'unit' => 'bunch'],
+            ['name' => 'Cumin', 'quantity' => '2', 'unit' => 'tsp'],
+            ['name' => 'Dried Oregano', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Chili Powder', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Vegetable Oil', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Salt', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Black Pepper', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'For Toppings:', 'quantity' => '', 'unit' => ''],
+            ['name' => 'Radishes', 'quantity' => '6', 'unit' => ''],
+            ['name' => 'Avocado', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'Queso Fresco or Cotija Cheese', 'quantity' => '100', 'unit' => 'g'],
+            ['name' => 'Salsa Verde or Roja', 'quantity' => '1', 'unit' => 'cup'],
+        ];
+        
+        $tacosSteps = [
+            'Slice the beef against the grain into thin strips.',
+            'In a bowl, mix cumin, oregano, chili powder, minced garlic, salt, and pepper.',
+            'Add the beef to the spice mixture and toss to coat. Add the juice of one lime and mix well.',
+            'Heat oil in a large skillet over high heat until smoking.',
+            'Cook the beef in batches, without overcrowding, for about 3-4 minutes until browned and slightly crispy on the edges.',
+            'Transfer to a plate and cover with foil to keep warm.',
+            'Dice the onion and chop the cilantro.',
+            'Warm the corn tortillas on a dry skillet or directly over a gas flame for about 30 seconds per side.',
+            'To assemble: place beef on each tortilla, top with diced onion, cilantro, sliced radishes, crumbled cheese, and avocado slices.',
+            'Serve with lime wedges and salsa on the side.'
+        ];
+        
+        $tacosEquipment = ['Large skillet', 'Mixing bowl', 'Cutting board', 'Sharp knife', 'Tongs'];
+        
+        $this->createRecipe($tacosData, $chef, $mainCourse, $tacosIngredients, $tacosSteps, $tacosEquipment);
+        
+        // Chicken Enchiladas (Main Course)
+        $enchiladasData = [
+            'title' => 'Chicken Enchiladas with Red Sauce',
+            'description' => 'Corn tortillas filled with shredded chicken, smothered in a rich red chile sauce, and topped with melted cheese. A classic Mexican comfort food.',
+            'prep_time' => 30,
+            'cook_time' => 45,
+            'servings' => 6,
+            'difficulty' => 'medium',
+            'cuisine' => 'Mexican',
+            'image_path' => 'recipe-images/enchiladas.jpg',
+        ];
+        
+        $enchiladasIngredients = [
+            ['name' => 'Corn Tortillas', 'quantity' => '12', 'unit' => ''],
+            ['name' => 'Chicken Breasts', 'quantity' => '750', 'unit' => 'g'],
+            ['name' => 'Dried Guajillo Chiles', 'quantity' => '6', 'unit' => ''],
+            ['name' => 'Dried Ancho Chiles', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'Garlic', 'quantity' => '4', 'unit' => 'cloves'],
+            ['name' => 'White Onion', 'quantity' => '1', 'unit' => 'medium'],
+            ['name' => 'Tomatoes', 'quantity' => '2', 'unit' => 'medium'],
+            ['name' => 'Chicken Broth', 'quantity' => '2', 'unit' => 'cups'],
+            ['name' => 'Cumin', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Dried Oregano', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Vegetable Oil', 'quantity' => '3', 'unit' => 'tbsp'],
+            ['name' => 'Monterey Jack or Queso Chihuahua', 'quantity' => '300', 'unit' => 'g'],
+            ['name' => 'Sour Cream', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Fresh Cilantro', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Salt', 'quantity' => '', 'unit' => 'to taste'],
+        ];
+        
+        $enchiladasSteps = [
+            'Poach the chicken: Place chicken breasts in a pot, cover with water, add salt, and simmer for 20 minutes until cooked through.',
+            'Remove chicken, let cool, then shred with two forks. Reserve 2 cups of the cooking liquid.',
+            'For the sauce: Remove stems and seeds from dried chiles. Toast them in a dry skillet for 1-2 minutes until fragrant.',
+            'Place toasted chiles in a bowl and cover with hot water. Let soak for 20 minutes until soft.',
+            'In the same skillet, roast the tomatoes and half the onion until charred. Add garlic for the last minute.',
+            'Drain the chiles and place in a blender with the roasted vegetables, cumin, oregano, and 1 cup of chicken broth. Blend until smooth.',
+            'Heat 2 tablespoons oil in a saucepan over medium heat. Strain the sauce into the pan and simmer for 15 minutes, adding more broth if too thick.',
+            'In a separate pan, heat 1 tablespoon oil and briefly fry each tortilla for about 10 seconds per side to soften (or microwave them wrapped in damp paper towels).',
+            'Dip each tortilla in the warm sauce, fill with shredded chicken, and roll up.',
+            'Place enchiladas seam-side down in a baking dish. Pour remaining sauce over top and sprinkle with cheese.',
+            'Bake at 375°F (190°C) for 15-20 minutes until cheese is melted and bubbly.',
+            'Garnish with diced onion, cilantro, and a drizzle of sour cream.'
+        ];
+        
+        $enchiladasEquipment = ['Large pot', 'Skillet', 'Blender', 'Baking dish', 'Tongs', 'Strainer'];
+        
+        $this->createRecipe($enchiladasData, $chef, $mainCourse, $enchiladasIngredients, $enchiladasSteps, $enchiladasEquipment);
+        
+        // Guacamole (Appetizer)
+        $guacamoleData = [
+            'title' => 'Authentic Mexican Guacamole',
+            'description' => 'A classic Mexican dip made with ripe avocados, lime juice, cilantro, and just the right amount of heat. Perfect with tortilla chips or as a topping for tacos.',
+            'prep_time' => 15,
+            'cook_time' => 0,
+            'servings' => 6,
+            'difficulty' => 'easy',
+            'cuisine' => 'Mexican',
+            'image_path' => 'recipe-images/guacamole.jpg',
+        ];
+        
+        $guacamoleIngredients = [
+            ['name' => 'Ripe Avocados', 'quantity' => '4', 'unit' => 'large'],
+            ['name' => 'Lime', 'quantity' => '1', 'unit' => ''],
+            ['name' => 'Red Onion', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Fresh Cilantro', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Jalapeño or Serrano Pepper', 'quantity' => '1', 'unit' => ''],
+            ['name' => 'Roma Tomato', 'quantity' => '1', 'unit' => 'medium'],
+            ['name' => 'Garlic', 'quantity' => '1', 'unit' => 'clove'],
+            ['name' => 'Salt', 'quantity' => '1/2', 'unit' => 'tsp'],
+            ['name' => 'Tortilla Chips', 'quantity' => '', 'unit' => 'for serving'],
+        ];
+        
+        $guacamoleSteps = [
+            'Cut the avocados in half, remove the pits, and scoop the flesh into a bowl.',
+            'Mash the avocados with a fork, leaving some chunks for texture.',
+            'Finely dice the red onion and tomato. Mince the garlic and jalapeño (remove seeds for less heat).',
+            'Chop the cilantro leaves.',
+            'Add the diced onion, tomato, garlic, jalapeño, and cilantro to the mashed avocados.',
+            'Squeeze the lime juice over the mixture and add salt.',
+            'Gently stir to combine all ingredients, being careful not to over-mix.',
+            'Taste and adjust seasoning if needed.',
+            'Serve immediately with tortilla chips, or place plastic wrap directly on the surface of the guacamole and refrigerate briefly to prevent browning.'
+        ];
+        
+        $guacamoleEquipment = ['Mixing bowl', 'Fork', 'Cutting board', 'Knife'];
+        
+        $this->createRecipe($guacamoleData, $chef, $appetizer, $guacamoleIngredients, $guacamoleSteps, $guacamoleEquipment);
+        
+        // Salsa Roja (Appetizer)
+        $salsaData = [
+            'title' => 'Roasted Tomato Salsa Roja',
+            'description' => 'A vibrant, smoky Mexican salsa made with roasted tomatoes, chiles, and garlic. Perfect for dipping chips or topping your favorite Mexican dishes.',
+            'prep_time' => 10,
+            'cook_time' => 15,
+            'servings' => 8,
+            'difficulty' => 'easy',
+            'cuisine' => 'Mexican',
+            'image_path' => 'recipe-images/salsa-roja.jpg',
+        ];
+        
+        $salsaIngredients = [
+            ['name' => 'Roma Tomatoes', 'quantity' => '6', 'unit' => ''],
+            ['name' => 'Jalapeño or Serrano Peppers', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'White Onion', 'quantity' => '1/2', 'unit' => ''],
+            ['name' => 'Garlic', 'quantity' => '3', 'unit' => 'cloves'],
+            ['name' => 'Fresh Cilantro', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Lime', 'quantity' => '1', 'unit' => ''],
+            ['name' => 'Salt', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Cumin', 'quantity' => '1/4', 'unit' => 'tsp'],
+            ['name' => 'Tortilla Chips', 'quantity' => '', 'unit' => 'for serving'],
+        ];
+        
+        $salsaSteps = [
+            'Preheat the broiler to high.',
+            'Place the whole tomatoes, jalapeños, onion half, and unpeeled garlic cloves on a baking sheet.',
+            'Broil for 10-15 minutes, turning occasionally, until vegetables are charred on all sides.',
+            'Remove from oven and let cool slightly.',
+            'Peel the garlic cloves and remove stems from the jalapeños. For a milder salsa, remove seeds and membranes from the jalapeños.',
+            'Place the roasted vegetables in a blender or food processor.',
+            'Add cilantro, lime juice, salt, and cumin.',
+            'Pulse until you reach your desired consistency (chunky or smooth).',
+            'Taste and adjust seasoning if needed.',
+            'Let cool completely before serving with tortilla chips.'
+        ];
+        
+        $salsaEquipment = ['Baking sheet', 'Blender or food processor', 'Knife', 'Cutting board'];
+        
+        $this->createRecipe($salsaData, $chef, $appetizer, $salsaIngredients, $salsaSteps, $salsaEquipment);
+    }
+    
+    private function createMoroccanRecipes($chef, $mainCourse, $soup) {
+        // Moroccan Tagine (Main Course)
+        $tagineData = [
+            'title' => 'Moroccan Lamb Tagine with Prunes',
+            'description' => 'A traditional Moroccan slow-cooked stew made with tender lamb, sweet prunes, and aromatic spices. Served with couscous, this dish is perfect for special occasions.',
+            'prep_time' => 30,
+            'cook_time' => 150,
+            'servings' => 6,
+            'difficulty' => 'medium',
+            'cuisine' => 'Moroccan',
+            'image_path' => 'recipe-images/lamb-tagine.jpg',
+        ];
+        
+        $tagineIngredients = [
+            ['name' => 'Lamb Shoulder, cut into 2-inch cubes (Ktef El-Kharoof)', 'quantity' => '1.5', 'unit' => 'kg'],
+            ['name' => 'Onions, finely chopped (Basla)', 'quantity' => '2', 'unit' => 'large'],
+            ['name' => 'Garlic, minced (Touma)', 'quantity' => '4', 'unit' => 'cloves'],
+            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground Ginger (Skinjbir)', 'quantity' => '2', 'unit' => 'tsp'],
+            ['name' => 'Ground Cumin (Kamoun)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Paprika (Felfla Hamra)', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Saffron Threads, soaked in hot water (Zafran)', 'quantity' => '1', 'unit' => 'pinch'],
+            ['name' => 'Dried Prunes, pitted (Barqouq)', 'quantity' => '250', 'unit' => 'g'],
+            ['name' => 'Honey (L\'assel)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
+            ['name' => 'Almonds, blanched and toasted (Louz)', 'quantity' => '100', 'unit' => 'g'],
+            ['name' => 'Sesame Seeds, toasted (Jinjelan)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Water (Ma)', 'quantity' => '2', 'unit' => 'cups'],
+            ['name' => 'Couscous (Kuskus)', 'quantity' => '500', 'unit' => 'g'],
+        ];
+        
+        $tagineSteps = [
+            'In a large tagine pot or Dutch oven, heat the olive oil over medium-high heat.',
+            'Season the lamb with salt and pepper, then brown in batches, about 3-4 minutes per batch. Transfer to a plate.',
+            'In the same pot, add the onions and cook until soft and translucent, about 5 minutes.',
+            'Add the garlic and cook for another minute until fragrant.',
+            'Add the cinnamon, ginger, cumin, paprika, and turmeric. Stir for 30 seconds until fragrant.',
+            'Return the lamb to the pot along with any accumulated juices.',
+            'Add the saffron with its soaking water and enough additional water to just cover the meat.',
+            'Bring to a boil, then reduce heat to low, cover, and simmer for 2 hours or until the lamb is very tender.',
+            'Add the prunes and honey, then simmer uncovered for another 30 minutes until the sauce has thickened.',
+            'Meanwhile, prepare the couscous according to package instructions.',
+            'Toast the almonds in a dry skillet until golden brown.',
+            'Serve the tagine over couscous, garnished with toasted almonds, sesame seeds, and fresh cilantro.'
+        ];
+        
+        $tagineEquipment = ['Tagine pot or Dutch oven', 'Large skillet', 'Measuring spoons', 'Sharp knife', 'Cutting board'];
+        
+        $this->createRecipe($tagineData, $chef, $mainCourse, $tagineIngredients, $tagineSteps, $tagineEquipment);
+        
+        // Moroccan Couscous (Main Course)
+        $couscousData = [
+            'title' => 'Moroccan Seven Vegetable Couscous',
+            'description' => 'A colorful and flavorful Moroccan staple featuring fluffy couscous topped with seven vegetables and tender meat, seasoned with aromatic spices.',
+            'prep_time' => 45,
+            'cook_time' => 120,
+            'servings' => 8,
+            'difficulty' => 'medium',
+            'cuisine' => 'Moroccan',
+            'image_path' => 'recipe-images/moroccan-couscous.jpg',
+        ];
+        
+        $couscousIngredients = [
+            ['name' => 'Couscous (Kuskus)', 'quantity' => '750', 'unit' => 'g'],
+            ['name' => 'Lamb or Beef, cut into chunks (Lahm)', 'quantity' => '750', 'unit' => 'g'],
+            ['name' => 'Onions, chopped (Basla)', 'quantity' => '2', 'unit' => 'large'],
+            ['name' => 'Tomatoes, chopped (Maticha)', 'quantity' => '3', 'unit' => 'medium'],
+            ['name' => 'Carrots, peeled and cut (Khizzu)', 'quantity' => '4', 'unit' => 'medium'],
+            ['name' => 'Turnips, peeled and quartered (Left)', 'quantity' => '2', 'unit' => 'medium'],
+            ['name' => 'Zucchini, cut into chunks (Qaraa)', 'quantity' => '2', 'unit' => 'medium'],
+            ['name' => 'Cabbage, cut into wedges (Kromb)', 'quantity' => '1/4', 'unit' => 'head'],
+            ['name' => 'Chickpeas, soaked overnight and drained (Hommos)', 'quantity' => '250', 'unit' => 'g'],
+            ['name' => 'Butternut Squash, peeled and cubed (Graa Hamra)', 'quantity' => '500', 'unit' => 'g'],
+            ['name' => 'Garlic, minced (Touma)', 'quantity' => '3', 'unit' => 'cloves'],
+            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Fresh Parsley, chopped (Maadnous)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground Ginger (Skinjbir)', 'quantity' => '2', 'unit' => 'tsp'],
+            ['name' => 'Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Ras el Hanout (Ras el Hanout)', 'quantity' => '2', 'unit' => 'tsp'],
+            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
+            ['name' => 'Butter (Zebda)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Water (Ma)', 'quantity' => '3', 'unit' => 'liters'],
+        ];
+        
+        $couscousSteps = [
+            'In a large pot, heat the olive oil over medium-high heat. Add the meat and brown on all sides.',
+            'Add the chopped onions and cook until translucent, about 5 minutes.',
+            'Add the garlic, half of the cilantro and parsley, cinnamon, ginger, turmeric, and ras el hanout. Stir for 1 minute until fragrant.',
+            'Add the tomatoes and cook for 5 minutes until they start to break down.',
+            'Add the chickpeas and enough water to cover everything by 2 inches. Bring to a boil, then reduce heat, cover, and simmer for 1 hour.',
+            'Meanwhile, rinse the couscous under cold water and drain. Spread it on a large plate and let it dry for 10 minutes.',
+            'After the meat has cooked for 1 hour, add the carrots, turnips, and butternut squash to the pot. Continue cooking for 20 minutes.',
+            'Add the zucchini and cabbage and cook for another 15-20 minutes until all vegetables are tender.',
+            'While the vegetables are cooking, prepare the couscous: In a couscoussier (or a large pot with a steamer basket), bring water to a boil in the bottom pot.',
+            'Place the couscous in the top part of the couscoussier. Steam for 15 minutes.',
+            'Remove the couscous, place in a large bowl, and break up any lumps with a fork. Sprinkle with 1/2 cup of cold water and 1 tablespoon of olive oil. Mix well.',
+            'Return the couscous to the steamer and steam for another 15 minutes. Repeat this process one more time.',
+            'After the final steaming, transfer the couscous to a large serving dish. Mix in the butter and fluff with a fork.',
+            'Arrange the meat and vegetables on top of the couscous, and pour some of the broth over it.',
+            'Garnish with the remaining fresh herbs and serve with additional broth on the side.'
+        ];
+        
+        $couscousEquipment = ['Large pot or couscoussier', 'Steamer basket', 'Large serving dish', 'Sharp knife', 'Cutting board'];
+        
+        $this->createRecipe($couscousData, $chef, $mainCourse, $couscousIngredients, $couscousSteps, $couscousEquipment);
+        
+        // Harira Soup (Soup)
+        $hariraData = [
+            'title' => 'Moroccan Harira Soup',
+            'description' => 'A hearty traditional Moroccan soup typically served during Ramadan to break the fast. Made with tomatoes, lentils, chickpeas, and aromatic spices, it\'s both nutritious and flavorful.',
+            'prep_time' => 30,
+            'cook_time' => 60,
+            'servings' => 8,
+            'difficulty' => 'medium',
+            'cuisine' => 'Moroccan',
+            'image_path' => 'recipe-images/harira.jpg',
+        ];
+        
+        $hariraIngredients = [
+            ['name' => 'Lamb or Beef, diced small (Lahm)', 'quantity' => '300', 'unit' => 'g'],
+            ['name' => 'Onions, finely chopped (Basla)', 'quantity' => '2', 'unit' => 'medium'],
+            ['name' => 'Celery, finely chopped (Krafess)', 'quantity' => '2', 'unit' => 'stalks'],
+            ['name' => 'Tomatoes, diced (Maticha)', 'quantity' => '4', 'unit' => 'large'],
+            ['name' => 'Tomato Paste (Marka dial Maticha)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Lentils, rinsed (Laadess)', 'quantity' => '150', 'unit' => 'g'],
+            ['name' => 'Chickpeas, soaked overnight and drained (Hommos)', 'quantity' => '150', 'unit' => 'g'],
+            ['name' => 'Rice (Rouz)', 'quantity' => '60', 'unit' => 'g'],
+            ['name' => 'Vermicelli or Broken Spaghetti (Chaaria)', 'quantity' => '60', 'unit' => 'g'],
+            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Fresh Parsley, chopped (Maadnous)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Garlic, minced (Touma)', 'quantity' => '3', 'unit' => 'cloves'],
+            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground Ginger (Skinjbir)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Paprika (Felfla Hamra)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Flour (Dqiq)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Eggs, beaten (Beid)', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'Lemon, juiced (Hamod)', 'quantity' => '1', 'unit' => ''],
+            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Water (Ma)', 'quantity' => '2.5', 'unit' => 'liters'],
+        ];
+        
+        $hariraSteps = [
+            'In a large pot, heat the olive oil over medium heat. Add the meat and cook until browned.',
+            'Add the onions, celery, and garlic. Cook until softened, about 5 minutes.',
+            'Add the tomatoes, tomato paste, cinnamon, ginger, turmeric, and paprika. Stir well.',
+            'Add half of the cilantro and parsley, then pour in the water. Bring to a boil.',
+            'Add the chickpeas and lentils. Reduce heat, cover, and simmer for 30 minutes.',
+            'Add the rice and continue to simmer for 15 minutes.',
+            'Add the vermicelli and cook for another 10 minutes until tender.',
+            'In a small bowl, mix the flour with 1/2 cup of water to create a smooth slurry.',
+            'Slowly pour the flour mixture into the soup, stirring constantly to prevent lumps.',
+            'Simmer for 5 more minutes until the soup thickens slightly.',
+            'Slowly pour in the beaten eggs while stirring the soup. The eggs will cook in thin strands.',
+            'Stir in the lemon juice and the remaining cilantro and parsley.',
+            'Season with salt and pepper to taste.',
+            'Serve hot with lemon wedges and dates on the side, as traditionally eaten during Ramadan.'
+        ];
+        
+        $hariraEquipment = ['Large pot', 'Wooden spoon', 'Measuring cups and spoons', 'Sharp knife', 'Cutting board', 'Small bowl for flour mixture'];
+        
+        $this->createRecipe($hariraData, $chef, $soup, $hariraIngredients, $hariraSteps, $hariraEquipment);
+        
+        // Moroccan Pastilla (Main Course)
+        $pastillaData = [
+            'title' => 'Moroccan Chicken Pastilla',
+            'description' => 'A spectacular Moroccan dish that combines sweet and savory flavors - shredded chicken, almonds, and eggs wrapped in crispy phyllo dough, dusted with powdered sugar and cinnamon.',
+            'prep_time' => 60,
+            'cook_time' => 90,
+            'servings' => 8,
+            'difficulty' => 'hard',
+            'cuisine' => 'Moroccan',
+            'image_path' => 'recipe-images/pastilla.jpg',
+        ];
+        
+        $pastillaIngredients = [
+            ['name' => 'Chicken Thighs (Fkhad Djaj)', 'quantity' => '1', 'unit' => 'kg'],
+            ['name' => 'Onions, finely chopped (Basla)', 'quantity' => '3', 'unit' => 'large'],
+            ['name' => 'Garlic, minced (Touma)', 'quantity' => '4', 'unit' => 'cloves'],
+            ['name' => 'Fresh Ginger, grated (Skinjbir)', 'quantity' => '1', 'unit' => 'tbsp'],
+            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '2', 'unit' => 'tsp'],
+            ['name' => 'Ground Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground Cumin (Kamoun)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Saffron Threads, soaked in hot water (Zafran)', 'quantity' => '1', 'unit' => 'pinch'],
+            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Fresh Parsley, chopped (Maadnous)', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Almonds, blanched (Louz)', 'quantity' => '200', 'unit' => 'g'],
+            ['name' => 'Eggs (Beid)', 'quantity' => '6', 'unit' => ''],
+            ['name' => 'Phyllo Dough (Warqa)', 'quantity' => '1', 'unit' => 'package'],
+            ['name' => 'Butter, melted (Zebda)', 'quantity' => '200', 'unit' => 'g'],
+            ['name' => 'Powdered Sugar (Sukkar Naama)', 'quantity' => '4', 'unit' => 'tbsp'],
+            ['name' => 'Ground Cinnamon for dusting (Qarfa)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
+            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Water (Ma)', 'quantity' => '2', 'unit' => 'cups'],
+        ];
+        
+        $pastillaSteps = [
+            'In a large pot, heat the olive oil over medium heat. Add the chicken thighs, onions, garlic, ginger, cinnamon, turmeric, cumin, and saffron with its soaking water.',
+            'Add salt and pepper to taste, then pour in enough water to just cover the chicken.',
+            'Bring to a boil, then reduce heat, cover, and simmer for about 45 minutes until the chicken is very tender.',
+            'Remove the chicken from the broth and set aside to cool. Continue simmering the broth to reduce by half.',
+            'When the chicken is cool enough to handle, remove the skin and bones, and shred the meat into small pieces.',
+            'Toast the almonds in a dry skillet until golden brown. Let cool, then coarsely grind them in a food processor with 2 tablespoons of powdered sugar and 1 tablespoon of cinnamon.',
+            'Beat the eggs and slowly pour them into the simmering broth, stirring constantly to create thin strands. Cook for 2 minutes until the eggs are set.',
+            'Add the shredded chicken, cilantro, and parsley to the egg mixture. The filling should be moist but not watery. If needed, continue cooking to evaporate excess liquid.',
+            'Preheat the oven to 375°F (190°C).',
+            'Butter a 12-inch round baking pan or traditional clay tagine bottom.',
+            'Lay out the phyllo sheets and cover with a damp cloth to prevent drying.',
+            'Place 6 sheets of phyllo in the pan, brushing each sheet with melted butter and allowing the edges to hang over the sides of the pan.',
+            'Spread half of the almond mixture over the phyllo.',
+            'Spread the chicken and egg mixture over the almonds.',
+            'Top with the remaining almond mixture.',
+            'Fold the overhanging phyllo over the filling, then top with 6 more buttered phyllo sheets, tucking the edges into the sides of the pan.',
+            'Brush the top with melted butter.',
+            'Bake for 30-40 minutes until golden brown and crispy.',
+            'Let cool for 10 minutes, then invert onto a serving platter.',
+            'Dust generously with powdered sugar and create a decorative pattern with ground cinnamon.',
+            'Serve warm, cut into wedges.'
+        ];
+        
+        $pastillaEquipment = ['Large pot', 'Food processor', '12-inch round baking pan or tagine bottom', 'Pastry brush', 'Wooden spoon', 'Serving platter'];
+        
+        $this->createRecipe($pastillaData, $chef, $mainCourse, $pastillaIngredients, $pastillaSteps, $pastillaEquipment);
+    }
+    
+    private function createFrenchRecipes($chef, $mainCourse, $dessert) {}
+    private function createIndianRecipes($chef, $mainCourse, $appetizer) {}
+    private function createChineseRecipes($chef, $mainCourse, $soup) {}
+    private function createThaiRecipes($chef, $mainCourse, $soup) {}
+    private function createGreekRecipes($chef, $mainCourse, $appetizer) {}
+    private function createTurkishRecipes($chef, $mainCourse, $appetizer) {}
+}
