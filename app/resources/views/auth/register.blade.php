@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platea - Create Account</title>
+    <title>CookNow - Create Account</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -52,11 +52,23 @@
                         <div class="bg-red-500 rounded text-white p-2 mr-2">
                             <i class="fas fa-utensils text-xl"></i>
                         </div>
-                        <span class="text-2xl font-bold text-gray-800">Platea</span>
+                        <span class="text-2xl font-bold text-gray-800">CookNow</span>
                     </div>
                     <h2 class="text-3xl font-bold text-gray-900 mt-6 mb-2">Create your account</h2>
-                    <p class="text-gray-600">Join our community of food lovers</p>
+                    <p class="text-gray-600">Join our cooking community</p>
                 </div>
+
+                <!-- Error Messages -->
+                @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <p>Please fix these errors:</p>
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
 
                 <!-- Progress Steps -->
                 <div class="flex justify-between mb-8">
@@ -92,63 +104,59 @@
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">First Name</label>
                             <input type="text" 
-                                    name="first_name"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                    placeholder="Enter first name">
+                                   name="first_name" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                   placeholder="Your first name"
+                                   value="{{ old('first_name') }}"
+                                   required>
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Last Name</label>
                             <input type="text" 
-                                    name="last_name"
+                                   name="last_name" 
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                   placeholder="Enter last name">
+                                   placeholder="Your last name"
+                                   value="{{ old('last_name') }}"
+                                   required>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-gray-700 font-medium mb-2">Email</label>
+                        <label class="block text-gray-700 font-medium mb-2">Email Address</label>
                         <input type="email" 
-                        name="email"
+                               name="email" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               placeholder="Enter your email">
+                               placeholder="Your email address"
+                               value="{{ old('email') }}"
+                               required>
                     </div>
 
                     <div>
                         <label class="block text-gray-700 font-medium mb-2">Password</label>
-                        <input type="password" 
-                        name="password"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               placeholder="Choose a username">
-
-                               <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                                <i class="far fa-eye"></i>
-                            </button>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Password Confimation</label>
                         <div class="relative">
                             <input type="password" 
-                            name="password_confirmation"
+                                   name="password" 
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                   placeholder="Create a password">
+                                   placeholder="Create a password"
+                                   required>
                             <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                 <i class="far fa-eye"></i>
                             </button>
                         </div>
-                        <div class="mt-2 space-y-1">
-                            <div class="flex items-center text-sm">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span class="text-gray-600">At least 8 characters</span>
-                            </div>
-                            <div class="flex items-center text-sm">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span class="text-gray-600">Contains a number</span>
-                            </div>
-                            <div class="flex items-center text-sm">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span class="text-gray-600">Contains a special character</span>
-                            </div>
+                        <p class="text-gray-500 text-sm mt-1">Must be at least 8 characters long</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Confirm Password</label>
+                        <div class="relative">
+                            <input type="password" 
+                                   name="password_confirmation" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                   placeholder="Confirm your password"
+                                   required>
+                            <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i class="far fa-eye"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -164,15 +172,6 @@
                             class="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors">
                         Continue
                     </button>
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
                 </form>
      
 
