@@ -1,5 +1,4 @@
-
- <footer class="bg-gray-800 text-white py-12">
+<footer class="bg-gray-800 text-white py-12">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -7,7 +6,7 @@
                     <div class="bg-red-500 rounded text-white p-1.5 mr-2">
                         <i class="fas fa-utensils"></i>
                     </div>
-                    <span class="text-xl font-bold">Platea</span>
+                    <span class="text-xl font-bold">CookNow</span>
                 </div>
                 <p class="text-gray-400 text-sm mb-4">Discover delicious recipes from around the world. Cook with confidence.</p>
                 <div class="flex space-x-4">
@@ -61,7 +60,7 @@
         </div>
         
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2025 Platea. All rights reserved. | Privacy Policy | Terms of Service</p>
+            <p>&copy; 2025 CookNow. All rights reserved. | Privacy Policy | Terms of Service</p>
         </div>
     </div>
 </footer>
