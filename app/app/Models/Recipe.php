@@ -68,4 +68,12 @@ class Recipe extends Model
     {
         return $this->hasMany(RecipeEquipment::class);
     }
+    
+    /**
+     * Get the cooking records for this recipe.
+     */
+    public function cookedRecords(): HasMany
+    {
+        return $this->hasMany(CookedRecipe::class);
+    }
 }
