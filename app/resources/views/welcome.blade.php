@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platea - Recipe Website</title>
+    <title>CookNow - Recipe Website</title>
+    @guest
+        <x-login-popup />
+    @endguest
     <script src="https://cdn.tailwindcss.com"></script>
+    <x-recipe-card-script />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -50,14 +54,14 @@
                 <p class="text-gray-100 mb-8 text-lg">
                     Feed your imagination and spark your creativity. From cravings to creations.
                 </p>
-                <div class="bg-white rounded-full shadow-md flex items-center p-1 pl-5 mb-4 max-w-md">
-                    <input 
-                        type="text" 
-                        placeholder="Find what do you want to cook today" 
-                        class="flex-grow outline-none text-gray-700 py-2.5"
-                    >
-                    <button class="bg-red-500 hover:bg-red-600 text-white rounded-full p-3 transition-colors shadow-sm">
-                        <i class="fas fa-search"></i>
+                <!-- Search Bar -->
+                <div class="flex bg-white rounded-lg shadow-lg p-2">
+                    <input type="text" 
+                           id="recipe-search-input"
+                           placeholder="Search cuisines or dishes..." 
+                           class="flex-1 px-4 py-2 focus:outline-none">
+                    <button id="recipe-search-button" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                        Search
                     </button>
                 </div>
                 <div class="flex space-x-4 mt-6">
@@ -75,40 +79,20 @@
         </div>
     </section>
 
-    <!-- Category Pills -->
-    <section class="py-6 px-4 bg-white border-b border-gray-100">
-        <div class="container mx-auto">
-            <div class="flex overflow-x-auto py-2 space-x-3 no-scrollbar">
-                <button class="bg-red-500 text-white px-5 py-2 rounded-full text-sm whitespace-nowrap">All Recipes</button>
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-full text-sm whitespace-nowrap transition-colors">Breakfast</button>
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-full text-sm whitespace-nowrap transition-colors">Lunch</button>
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-full text-sm whitespace-nowrap transition-colors">Dinner</button>
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-full text-sm whitespace-nowrap transition-colors">Vegetarian</button>
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-full text-sm whitespace-nowrap transition-colors">Quick & Easy</button>
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-full text-sm whitespace-nowrap transition-colors">Desserts</button>
-            </div>
-        </div>
-    </section>
+   
 
     <!-- Latest Recipes -->
     <section class="py-12">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold mb-0">Latest Recipes</h2>
-                <div class="flex space-x-2">
-                    <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 transition-colors">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="p-2 bg-red-500 text-white rounded-full transition-colors">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
+                
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6" id="recipe-results">
                 @forelse($latestRecipes as $recipe)
                 <!-- Recipe Card -->
-                <a href="{{ route('recipes.show', $recipe) }}" class="block">
-                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                    <a href="{{ route('recipes.start-cooking', $recipe) }}" class="block">
                         <div class="relative">
                             @if($recipe->image_path)
                                 <img src="{{ asset('storage/' . $recipe->image_path) }}" alt="{{ $recipe->title }}" class="w-full h-48 object-cover">
@@ -143,7 +127,7 @@
                                 <div class="flex items-center">
                                     @if($recipe->user)
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($recipe->user->name) }}&background=random" alt="{{ $recipe->user->name }}" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                        <span class="text-xs text-gray-500">Chef {{ $recipe->user->name }}</span>
+                                        <span class="text-xs text-gray-500">Made by {{ $recipe->user->name }}</span>
                                     @else
                                         <img src="https://ui-avatars.com/api/?name=Unknown&background=random" alt="Unknown Chef" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
                                         <span class="text-xs text-gray-500">Unknown Chef</span>
@@ -152,8 +136,11 @@
                                 <span class="text-xs text-gray-500">{{ $recipe->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
+                    </a>
+                    <div class="block bg-red-500 hover:bg-red-600 text-white text-center py-2 transition-colors">
+                        <i class="fas fa-utensils mr-1"></i> Start Cooking
                     </div>
-                </a>
+                </div>
                 @empty
                 <div class="col-span-5 p-8 text-center">
                     <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
@@ -211,8 +198,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 @forelse($newRecipes as $recipe)
                 <!-- New Recipe Card -->
-                <a href="{{ route('recipes.show', $recipe) }}" class="block">
-                    <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                <div class="recipe-card bg-white rounded-lg overflow-hidden shadow-sm">
+                    <a href="{{ route('recipes.start-cooking', $recipe) }}" class="block">
                         <div class="relative">
                             @if($recipe->image_path)
                                 <img src="{{ asset('storage/' . $recipe->image_path) }}" alt="{{ $recipe->title }}" class="w-full h-48 object-cover">
@@ -244,7 +231,7 @@
                                 <div class="flex items-center">
                                     @if($recipe->user)
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($recipe->user->name) }}&background=random" alt="{{ $recipe->user->name }}" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                        <span class="text-xs text-gray-500">Chef {{ $recipe->user->name }}</span>
+                                        <span class="text-xs text-gray-500">Made by {{ $recipe->user->name }}</span>
                                     @else
                                         <img src="https://ui-avatars.com/api/?name=Unknown&background=random" alt="Unknown Chef" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
                                         <span class="text-xs text-gray-500">Unknown Chef</span>
@@ -253,8 +240,11 @@
                                 <span class="text-xs text-gray-500">{{ $recipe->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
+                    </a>
+                    <div class="block bg-red-500 hover:bg-red-600 text-white text-center py-2 transition-colors">
+                        <i class="fas fa-utensils mr-1"></i> Start Cooking
                     </div>
-                </a>
+                </div>
                 @empty
                 <div class="col-span-4 p-8 text-center">
                     <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
@@ -343,5 +333,14 @@
     </section>
  <!-- Footer could go here -->
     <x-footer />
+    
+    <!-- Login Popup for unauthenticated users -->
+    @guest
+        <x-login-popup />
+    @endguest
+    
+    <!-- Recipe Card Script for Login Popup -->
+    <x-recipe-card-script />
+    <script src="{{ asset('js/search.js') }}"></script>
 </body>
 </html>
