@@ -5,7 +5,7 @@
             <div class="bg-red-500 rounded text-white p-1.5 mr-2">
                 <i class="fas fa-utensils"></i>
             </div>
-            <span class="text-xl font-bold text-gray-800">Platea</span>
+            <span class="text-xl font-bold text-gray-800">CookNow</span>
         </div>
         
         <!-- Mobile Burger Menu Button -->
