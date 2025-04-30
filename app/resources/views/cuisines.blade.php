@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platea - World Cuisines</title>
+    <title>CookNow - World Cuisines</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -50,9 +50,10 @@
                 <!-- Search Bar -->
                 <div class="flex bg-white rounded-lg shadow-lg p-2">
                     <input type="text" 
+                           id="cuisine-search-input"
                            placeholder="Search cuisines or dishes..." 
                            class="flex-1 px-4 py-2 focus:outline-none">
-                    <button class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                    <button id="cuisine-search-button" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
                         Search
                     </button>
                 </div>
@@ -63,9 +64,10 @@
     <!-- Popular Cuisines Grid -->
     <section class="py-16">
         <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div id="cuisine-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 <!-- Italian Cuisine -->
-                <div class="cuisine-card bg-white rounded-lg overflow-hidden shadow-sm">
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Italian']) }}" class="block">
+                <div class="cuisine-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
                     <div class="relative h-48">
                         <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352" 
                              alt="Italian Cuisine"
@@ -95,9 +97,11 @@
                         </div>
                     </div>
                 </div>
+                </a>
 
                 <!-- Japanese Cuisine -->
-                <div class="cuisine-card bg-white rounded-lg overflow-hidden shadow-sm">
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Japanese']) }}" class="block">
+                <div class="cuisine-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
                     <div class="relative h-48">
                         <img src="https://images.unsplash.com/photo-1580822184713-fc5400e7fe10" 
                              alt="Japanese Cuisine"
@@ -127,9 +131,11 @@
                         </div>
                     </div>
                 </div>
+                </a>
 
                 <!-- Mexican Cuisine -->
-                <div class="cuisine-card bg-white rounded-lg overflow-hidden shadow-sm">
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Mexican']) }}" class="block">
+                <div class="cuisine-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
                     <div class="relative h-48">
                         <img src="https://images.unsplash.com/photo-1584208632869-05fa2b2a5934" 
                              alt="Mexican Cuisine"
@@ -159,6 +165,7 @@
                         </div>
                     </div>
                 </div>
+                </a>
 
                 <!-- Add more cuisine cards here -->
             </div>
@@ -172,13 +179,13 @@
             
             <!-- Cuisine Tabs -->
             <div class="flex overflow-x-auto mb-8 pb-2 -mx-6 px-6">
-                <button class="flex-none px-6 py-2 bg-red-500 text-white rounded-full mr-4">All</button>
-                <button class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Italian</button>
-                <button class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Japanese</button>
-                <button class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Mexican</button>
-                <button class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Indian</button>
-                <button class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Chinese</button>
-                <button class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200">More</button>
+                <a href="{{ route('recipes.search') }}" class="flex-none px-6 py-2 bg-red-500 text-white rounded-full mr-4">All</a>
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Italian']) }}" class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Italian</a>
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Japanese']) }}" class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Japanese</a>
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Mexican']) }}" class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Mexican</a>
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Indian']) }}" class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Indian</a>
+                <a href="{{ route('recipes.by-cuisine', ['cuisine' => 'Chinese']) }}" class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full mr-4 hover:bg-gray-200">Chinese</a>
+                <a href="{{ route('cuisines') }}" class="flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200">More</a>
             </div>
 
             <!-- Recipe Grid -->
@@ -248,6 +255,7 @@
    <!-- Footer could go here -->
    <x-footer />
 
+    <script src="{{ asset('js/search.js') }}"></script>
     <script>
         // Update timestamp
         function updateTimestamp() {
