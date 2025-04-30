@@ -45,12 +45,28 @@ class RecipeController extends Controller
     }
     
     /**
-     * Display the specified recipe
+     * Display the specified recipe - now redirects to start-cooking
      */
     public function show(Recipe $recipe)
     {
+        // Redirect to the start-cooking page instead of showing the recipe detail page
+        return redirect()->route('recipes.start-cooking', $recipe);
+    }
+    
+    /**
+     * Display the start cooking page
+     */
+    public function startCooking(Recipe $recipe)
+    {
         $recipe->load(['user', 'categories', 'ingredients', 'steps', 'equipment']);
-        return view('recette', compact('recipe'));
+        $isAuthenticated = Auth::check();
+        
+        // If user is not authenticated, redirect to login page with a message
+        if (!$isAuthenticated) {
+            return redirect()->route('login')->with('message', 'Please login to start cooking this recipe.');
+        }
+        
+        return view('start-cooking', compact('recipe'));
     }
     
     /**
@@ -387,5 +403,70 @@ class RecipeController extends Controller
             
             return redirect()->route('recipes.show', $recipe)->with('error', 'Failed to delete recipe: ' . $e->getMessage());
         }
+    }
+    
+    /**
+     * Display recipes filtered by cuisine.
+     *
+     * @param string $cuisine
+     * @return \Illuminate\View\View
+     */
+    public function byCuisine($cuisine)
+    {
+        $recipes = Recipe::with(['user', 'categories', 'ingredients'])
+            ->where('cuisine', 'like', "%{$cuisine}%")
+            ->latest()
+            ->paginate(12);
+        
+        return view('search', compact('recipes', 'cuisine'));
+    }
+    
+    /**
+     * Search for recipes based on query parameters
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $cuisine = $request->input('cuisine');
+        $cookingTime = $request->input('cooking_time');
+        $mealType = $request->input('meal_type');
+        $diet = $request->input('diet');
+        
+        // Start with a base query
+        $recipesQuery = Recipe::with(['user', 'categories', 'ingredients']);
+        
+        // Apply filters if they exist
+        if ($query) {
+            $recipesQuery->where(function($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%")
+                  ->orWhere('description', 'like', "%{$query}%");
+            });
+        }
+        
+        if ($cuisine && $cuisine !== 'all') {
+            $recipesQuery->where('cuisine', 'like', "%{$cuisine}%");
+        }
+        
+        if ($cookingTime && $cookingTime !== 'all') {
+            // Parse cooking time filter (e.g., "30-60" means between 30 and 60 minutes)
+            $times = explode('-', $cookingTime);
+            if (count($times) == 2) {
+                $recipesQuery->whereRaw('(prep_time + cook_time) BETWEEN ? AND ?', [$times[0], $times[1]]);
+            } elseif ($cookingTime == 'under30') {
+                $recipesQuery->whereRaw('(prep_time + cook_time) < 30');
+            } elseif ($cookingTime == 'over60') {
+                $recipesQuery->whereRaw('(prep_time + cook_time) > 60');
+            }
+        }
+        
+        // Add more filters as needed (meal_type, diet, etc.)
+        
+        $recipes = $recipesQuery->latest()->paginate(12);
+        
+        if ($request->ajax()) {
+            return view('partials.recipe-cards', compact('recipes'))->render();
+        }
+        
+        return view('search', compact('recipes', 'cuisine'));
     }
 }
