@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platea - Sign In</title>
+    <title>CookNow - Sign In</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -63,17 +63,23 @@
                         <div class="bg-red-500 rounded text-white p-2 mr-2">
                             <i class="fas fa-utensils text-xl"></i>
                         </div>
-                        <span class="text-2xl font-bold text-gray-800">Platea</span>
+                        <span class="text-2xl font-bold text-gray-800">CookNow</span>
                     </div>
                     <h2 class="text-3xl font-bold text-gray-900 mt-6 mb-2">Welcome back</h2>
                     <p class="text-gray-600">Sign in to continue cooking</p>
                 </div>
 
-               
-
-               
-
-               
+                <!-- Error Messages -->
+                @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <p>Please fix these errors:</p>
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
 
                 <!-- Login Form -->
                 <form class="space-y-6" action="{{route('login')}}" method="POST">
@@ -84,6 +90,7 @@
                                 name="email"
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                                placeholder="Enter your email"
+                               value="{{ old('email') }}"
                                required
                                autofocus>
                     </div>
