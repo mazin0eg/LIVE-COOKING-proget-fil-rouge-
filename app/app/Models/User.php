@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -22,8 +23,8 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
-        'role'
-
+        'role',
+        'profile_image'
     ];
 
     /**
@@ -47,5 +48,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+    /**
+     * Get the recipes cooked by the user.
+     */
+    public function cookedRecipes(): HasMany
+    {
+        return $this->hasMany(CookedRecipe::class);
+    }
+    
+    /**
+     * Get the recipes created by the user.
+     */
+    public function recipes(): HasMany
+    {
+        return $this->hasMany(Recipe::class);
     }
 }
