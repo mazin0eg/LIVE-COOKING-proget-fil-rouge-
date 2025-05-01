@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Recipe extends Model
@@ -27,6 +26,7 @@ class Recipe extends Model
         'image_path',
         'difficulty',
         'cuisine',
+        'category_id',
     ];
 
     /**
@@ -38,11 +38,11 @@ class Recipe extends Model
     }
 
     /**
-     * The categories that belong to the recipe.
+     * Get the category that the recipe belongs to.
      */
-    public function categories(): BelongsToMany
+    public function category(): BelongsTo
     {
-        return $this->belongsToMany(categories::class, 'category_recipe', 'recipe_id', 'category_id');
+        return $this->belongsTo(categories::class, 'category_id');
     }
 
     /**
