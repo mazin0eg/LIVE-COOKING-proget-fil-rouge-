@@ -23,7 +23,7 @@ class ProfileController extends Controller
         if ($user->role === 'chef') {
             // For chefs, get recipes they created
             $recipes = Recipe::where('user_id', $user->id)
-                ->with(['categories', 'user'])
+                ->with(['category', 'user'])
                 ->latest()
                 ->paginate(8);
                 
@@ -32,7 +32,7 @@ class ProfileController extends Controller
             // For regular users (cookers), get recipes they cooked
             $cookedRecipes = CookedRecipe::where('user_id', $user->id)
                 ->where('completed_at', '!=', null)
-                ->with('recipe.categories', 'recipe.user')
+                ->with('recipe.category', 'recipe.user')
                 ->latest()
                 ->paginate(8);
                 
