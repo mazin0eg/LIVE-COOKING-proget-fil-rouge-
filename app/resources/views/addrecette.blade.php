@@ -208,8 +208,8 @@
                                    placeholder="Ingredient name" required>
                             <input type="text" name="quantities[]" 
                                    class="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                   placeholder="Amount" required>
-                            <select name="units[]" class="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+                                   placeholder="Amount" >
+                            <select name="units[]" class="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" >
                                 <option>g</option>
                                 <option>ml</option>
                                 <option>cups</option>
