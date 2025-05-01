@@ -1,1 +1,4 @@
-Lien vers les diagramme UML : https://drive.google.com/file/d/1zsfVdJmrKNKMBTg828XsYC3POu0gZKiE/view?usp=drive_link
+Lien vers les diagramme usecase : https://drive.google.com/file/d/1zsfVdJmrKNKMBTg828XsYC3POu0gZKiE/view?usp=drive_link
+
+
+Lien vers les diagramme de class : https://drive.google.com/file/d/1agdgAddrk96e6o14YwgNYM6X-WVcNbjK/view?usp=sharing
