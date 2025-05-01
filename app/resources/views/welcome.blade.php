@@ -125,13 +125,10 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center">
-                                    @if($recipe->user)
+                                    
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($recipe->user->name) }}&background=random" alt="{{ $recipe->user->name }}" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                        <span class="text-xs text-gray-500">Made by {{ $recipe->user->name }}</span>
-                                    @else
-                                        <img src="https://ui-avatars.com/api/?name=Unknown&background=random" alt="Unknown Chef" class="w-6 h-6 rounded-full mr-2 object-cover border border-white shadow-sm">
-                                        <span class="text-xs text-gray-500">Unknown Chef</span>
-                                    @endif
+                                        <span class="text-xs text-gray-500">by {{ $recipe->user->name }}</span>
+                                    
                                 </div>
                                 <span class="text-xs text-gray-500">{{ $recipe->created_at->diffForHumans() }}</span>
                             </div>
@@ -151,12 +148,6 @@
                 </div>
                 @endforelse
 
-
-
-
-               
-
-                 
 
             </div>
         </div>
