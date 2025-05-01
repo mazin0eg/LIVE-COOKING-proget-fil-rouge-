@@ -72,7 +72,7 @@
             <div class="container mx-auto">
                 <div class="max-w-4xl">
                     <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm mb-4 inline-block">
-                        {{ $recipe->categories->first() ? $recipe->categories->first()->name : 'Uncategorized' }}
+                        {{ $recipe->category ? $recipe->category->name : 'Uncategorized' }}
                     </span>
                     <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">{{ $recipe->title }}</h1>
                     <div class="flex flex-wrap items-center gap-6 text-white">
@@ -87,7 +87,7 @@
                         <!-- Chef info -->
                         <div class="flex items-center">
                             <i class="fas fa-user mr-2"></i>
-                            <span>Made by {{ $recipe->user->name }}</span>
+                            <span>by {{ $recipe->user->name }}</span>
                         </div>
                     </div>
                 </div>
@@ -497,8 +497,43 @@
                 timerInterval = null;
             }
             
-            // Show completion message
+            // Save cooking progress to database
+            @auth
+            const recipeId = {{ $recipe->id }};
+            
+            // Send AJAX request to save progress
+            fetch('/recipes/save-progress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    recipe_id: recipeId,
+                    cooking_time: seconds,
+                    completed_steps: completedSteps,
+                    total_steps: totalSteps
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show completion message
+                    alert('Congratulations! You have completed cooking this recipe in ' + formatTime(seconds) + '. Your progress has been saved.');
+                } else {
+                    // Show completion message without saving confirmation
+                    alert('Congratulations! You have completed cooking this recipe in ' + formatTime(seconds) + '.');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving cooking progress:', error);
+                // Show completion message even if saving failed
+                alert('Congratulations! You have completed cooking this recipe in ' + formatTime(seconds) + '.');
+            });
+            @else
+            // Show completion message for non-authenticated users
             alert('Congratulations! You have completed cooking this recipe in ' + formatTime(seconds) + '.');
+            @endauth
             
             // Hide the timer container
             const timerContainer = document.getElementById('cooking-timer-container');
