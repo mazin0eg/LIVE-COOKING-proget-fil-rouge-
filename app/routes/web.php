@@ -46,13 +46,41 @@ Route::get('/search', [RecipeController::class, 'search'])->name('recipes.search
 Route::post('/search', [RecipeController::class, 'search'])->name('recipes.search.post');
 Route::get('/cuisine/{cuisine}', [RecipeController::class, 'byCuisine'])->name('recipes.by-cuisine');
 
+// Route for saving cooking progress
+Route::post('/recipes/save-progress', [RecipeController::class, 'saveProgress'])->middleware('auth')->name('recipes.save-progress');
+
 // Recipe routes
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
-Route::get('/recette/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
-Route::get('/start-cooking/{recipe}', [RecipeController::class, 'startCooking'])->name('recipes.start-cooking');
-Route::get('/recipe/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipe.edit')->middleware('auth');
-Route::put('/recipe/{recipe}', [RecipeController::class, 'update'])->name('recipe.update')->middleware('auth');
-Route::delete('/recipe/{recipe}', [RecipeController::class, 'destroy'])->name('recipe.destroy')->middleware('auth');
+Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
+Route::get('/recipes/{recipe}/start-cooking', [RecipeController::class, 'startCooking'])->name('recipes.start-cooking');
+Route::post('/recipes/save-progress', [RecipeController::class, 'saveProgress'])->name('recipes.save-progress');
+
+// Chef routes (requires chef role)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/add', function () {
+        if (Gate::allows('chef_redirection')) {
+            return app(RecipeController::class)->create();
+        }
+        
+        if (Auth::user()->role === 'cooker') {
+            return redirect()->route('contact')->with('info', 'You need to be approved as a chef to add recipes. Please apply through the contact form.');
+        }
+        
+        return redirect()->route('show.login')->with('error', 'You must be logged in as a chef to access this page.');
+    })->name('recipe.create');
+    
+    Route::post('/add', function (\Illuminate\Http\Request $request) {
+        if (Gate::allows('chef_redirection')) {
+            return app(RecipeController::class)->store($request);
+        }
+        
+        return redirect()->route('contact')->with('info', 'You need to be approved as a chef to add recipes.');
+    })->name('recipe.store');
+    
+    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipe.edit');
+    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipe.update');
+    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipe.delete');
+});
 
 Route::get('/cuisines', function () {
     return view('cuisines');
@@ -75,27 +103,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    
-    // Chef only routes using Gate instead of middleware
-    Route::get('/add', function () {
-        if (Gate::allows('chef_redirection')) {
-            return app(RecipeController::class)->create();
-        }
-        
-        if (Auth::user()->role === 'cooker') {
-            return redirect()->route('contact')->with('info', 'You need to be approved as a chef to add recipes. Please apply through the contact form.');
-        }
-        
-        return redirect()->route('show.login')->with('error', 'You must be logged in as a chef to access this page.');
-    })->name('recipe.create');
-    
-    Route::post('/add', function (\Illuminate\Http\Request $request) {
-        if (Gate::allows('chef_redirection')) {
-            return app(RecipeController::class)->store($request);
-        }
-        
-        return redirect()->route('contact')->with('info', 'You need to be approved as a chef to add recipes.');
-    })->name('recipe.store');
 });
 
 // Cooking tracking routes
@@ -112,9 +119,25 @@ Route::middleware(['auth'])->group(function () {
             return app(AdminPage::class)->showadminpage();
         }
         return redirect('/')->with('error', 'You do not have permission to access the admin area.');
-    })->name('admin.page');
+    })->name('admin.dashboard');
     
-    // Admin routes with Gate checks
+    // Ban user route
+    Route::post('/admin/users/{id}/ban', function ($id) {
+        if (Gate::allows('admin_redirection')) {
+            return app(AdminPage::class)->banUser($id);
+        }
+        return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+    })->name('admin.users.ban');
+    
+    // Delete user route
+    Route::post('/admin/users/{id}', function ($id) {
+        if (Gate::allows('admin_redirection')) {
+            return app(AdminPage::class)->deleteUser($id);
+        }
+        return redirect()->back()->with('error', 'Unauthorized');
+    })->name('admin.users.delete');
+    
+    // Category routes
     Route::post('/admin/categories', function (\Illuminate\Http\Request $request) {
         if (Gate::allows('admin_redirection')) {
             return app(CategoriesController::class)->addcategories($request);
