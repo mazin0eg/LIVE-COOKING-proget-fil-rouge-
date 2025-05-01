@@ -34,7 +34,7 @@ class CookedRecipe extends Model
     ];
 
     /**
-     * Get the user that cooked this recipe.
+     * Get the user that cooked the recipe.
      */
     public function user(): BelongsTo
     {
