@@ -131,8 +131,8 @@
                                      class="w-full h-48 object-cover">
                                 @endif
                                 <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                                    @if($recipe->categories->first())
-                                        <span>{{ $recipe->categories->first()->name }}</span>
+                                    @if($recipe->category)
+                                        <span>{{ $recipe->category->name }}</span>
                                     @else
                                         <span>Uncategorized</span>
                                     @endif
@@ -141,6 +141,13 @@
                                     <a href="{{ route('recipe.edit', $recipe) }}" class="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm hover:bg-white transition-colors">
                                         <i class="fas fa-edit text-gray-600"></i>
                                     </a>
+                                    <form action="{{ route('recipe.delete', $recipe->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this recipe?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm hover:bg-white transition-colors">
+                                            <i class="fas fa-trash text-red-500"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             <div class="p-4">
@@ -176,8 +183,8 @@
                                      class="w-full h-48 object-cover">
                                 @endif
                                 <div class="absolute top-2 left-2 bg-white rounded-full p-1 text-sm font-medium flex items-center shadow-sm">
-                                    @if($cookedRecipe->recipe->categories->first())
-                                        <span>{{ $cookedRecipe->recipe->categories->first()->name }}</span>
+                                    @if($cookedRecipe->recipe->category)
+                                        <span>{{ $cookedRecipe->recipe->category->name }}</span>
                                     @else
                                         <span>Uncategorized</span>
                                     @endif
