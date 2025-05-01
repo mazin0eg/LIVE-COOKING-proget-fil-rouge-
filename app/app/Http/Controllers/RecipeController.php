@@ -7,6 +7,7 @@ use App\Models\Recipe;
 use App\Models\RecipeIngredient;
 use App\Models\RecipeStep;
 use App\Models\RecipeEquipment;
+use App\Models\CookedRecipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -19,7 +20,7 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        $recipes = Recipe::with(['user', 'categories', 'ingredients'])->latest()->paginate(12);
+        $recipes = Recipe::with(['user', 'category', 'ingredients'])->latest()->paginate(12);
         return view('search', compact('recipes'));
     }
     
@@ -58,7 +59,7 @@ class RecipeController extends Controller
      */
     public function startCooking(Recipe $recipe)
     {
-        $recipe->load(['user', 'categories', 'ingredients', 'steps', 'equipment']);
+        $recipe->load(['user', 'category', 'ingredients', 'steps', 'equipment']);
         $isAuthenticated = Auth::check();
         
         // If user is not authenticated, redirect to login page with a message
@@ -104,13 +105,13 @@ class RecipeController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'difficulty' => 'required|string|in:easy,medium,hard',
                 'cuisine' => 'required|string',
-                'image' => 'required|image|max:5120', // 5MB max
+                'image' => 'required|image|max:5120',
                 'ingredients' => 'required|array|min:1',
                 'ingredients.*' => 'required|string',
                 'quantities' => 'required|array|min:1',
                 'quantities.*' => 'required|string',
                 'units' => 'required|array|min:1',
-                'units.*' => 'required|string',
+                'units.*' => 'nullable|string',
                 'steps' => 'required|array|min:1',
                 'steps.*' => 'required|string',
                 'equipment' => 'required|array|min:1',
@@ -138,16 +139,13 @@ class RecipeController extends Controller
                 'difficulty' => $validated['difficulty'],
                 'cuisine' => $validated['cuisine'],
                 'image_path' => $imagePath,
+                'category_id' => $validated['category_id'],
             ]);
             
             Log::info('Recipe created successfully', ['recipe_id' => $recipe->id]);
             
-            // Attach category
-            // Use the correct column names for the pivot table
-            $recipe->categories()->attach($validated['category_id']);
-            
-            // Log the category attachment for debugging
-            Log::info('Category attached to recipe', [
+            // Log the category for debugging
+            Log::info('Category set for recipe', [
                 'recipe_id' => $recipe->id,
                 'category_id' => $validated['category_id']
             ]);
@@ -221,7 +219,7 @@ class RecipeController extends Controller
         }
         
         // Load the recipe with its relationships
-        $recipe->load(['categories', 'ingredients', 'steps', 'equipment']);
+        $recipe->load(['category', 'ingredients', 'steps', 'equipment']);
         
         // Get categories for the form
         $categories = categories::all();
@@ -256,7 +254,7 @@ class RecipeController extends Controller
                 'quantities' => 'required|array|min:1',
                 'quantities.*' => 'required|string',
                 'units' => 'required|array|min:1',
-                'units.*' => 'required|string',
+                'units.*' => 'nullable|string',
                 'steps' => 'required|array|min:1',
                 'steps.*' => 'required|string',
                 'equipment' => 'required|array|min:1',
@@ -283,10 +281,9 @@ class RecipeController extends Controller
                 'servings' => $validated['servings'],
                 'difficulty' => $validated['difficulty'],
                 'cuisine' => $validated['cuisine'],
+                'category_id' => $validated['category_id'],
+                'image_path' => $imagePath ?? $recipe->image_path,
             ]);
-            
-            // Update category
-            $recipe->categories()->sync([$validated['category_id']]);
             
             // Update ingredients - delete existing and add new ones
             $recipe->ingredients()->delete();
@@ -379,13 +376,23 @@ class RecipeController extends Controller
                 }
             }
             
-            // Delete recipe and all related records (ingredients, steps, equipment)
-            // This will cascade delete if you've set up your foreign keys correctly
+            // Manually delete related records to ensure everything is removed
+            RecipeIngredient::where('recipe_id', $recipe->id)->delete();
+            RecipeStep::where('recipe_id', $recipe->id)->delete();
+            RecipeEquipment::where('recipe_id', $recipe->id)->delete();
+            CookedRecipe::where('recipe_id', $recipe->id)->delete();
+            
+            // Delete the recipe itself
             $recipe->delete();
             
             // If request is from admin page, redirect to admin page
             if (request()->is('admin*')) {
-                return redirect()->route('admin.page')->with('success', 'Recipe deleted successfully!');
+                return redirect()->route('admin.dashboard')->with('success', 'Recipe deleted successfully!');
+            }
+            
+            // If request is from profile page, redirect to profile
+            if (request()->is('profile*') || request()->header('referer') && str_contains(request()->header('referer'), 'profile')) {
+                return redirect()->route('profile')->with('success', 'Recipe deleted successfully!');
             }
             
             // Otherwise redirect to recipes index
@@ -398,7 +405,12 @@ class RecipeController extends Controller
             
             // If request is from admin page, redirect to admin page
             if (request()->is('admin*')) {
-                return redirect()->route('admin.page')->with('error', 'Failed to delete recipe: ' . $e->getMessage());
+                return redirect()->route('admin.dashboard')->with('error', 'Failed to delete recipe: ' . $e->getMessage());
+            }
+            
+            // If request is from profile page, redirect to profile
+            if (request()->is('profile*') || request()->header('referer') && str_contains(request()->header('referer'), 'profile')) {
+                return redirect()->route('profile')->with('error', 'Failed to delete recipe: ' . $e->getMessage());
             }
             
             return redirect()->route('recipes.show', $recipe)->with('error', 'Failed to delete recipe: ' . $e->getMessage());
@@ -413,12 +425,52 @@ class RecipeController extends Controller
      */
     public function byCuisine($cuisine)
     {
-        $recipes = Recipe::with(['user', 'categories', 'ingredients'])
+        $recipes = Recipe::with(['user', 'category', 'ingredients'])
             ->where('cuisine', 'like', "%{$cuisine}%")
             ->latest()
             ->paginate(12);
         
         return view('search', compact('recipes', 'cuisine'));
+    }
+
+    /**
+     * Save user's cooking progress for a recipe
+     */
+    public function saveProgress(Request $request)
+    {
+        $validated = $request->validate([
+            'recipe_id' => 'required|exists:recipes,id',
+            'cooking_time' => 'required|integer',
+            'completed_steps' => 'required|integer',
+            'total_steps' => 'required|integer',
+        ]);
+
+        // Check if a record already exists
+        $cookedRecipe = CookedRecipe::where('user_id', auth()->id())
+            ->where('recipe_id', $validated['recipe_id'])
+            ->first();
+
+        if ($cookedRecipe) {
+            // Update existing record
+            $cookedRecipe->update([
+                'cooking_time' => $validated['cooking_time'],
+                'completed_steps' => $validated['completed_steps'],
+                'total_steps' => $validated['total_steps'],
+                'completed_at' => now(),
+            ]);
+        } else {
+            // Create new record
+            CookedRecipe::create([
+                'user_id' => auth()->id(),
+                'recipe_id' => $validated['recipe_id'],
+                'cooking_time' => $validated['cooking_time'],
+                'completed_steps' => $validated['completed_steps'],
+                'total_steps' => $validated['total_steps'],
+                'completed_at' => now(),
+            ]);
+        }
+
+        return response()->json(['success' => true]);
     }
     
     /**
@@ -429,43 +481,41 @@ class RecipeController extends Controller
         $query = $request->input('query');
         $cuisine = $request->input('cuisine');
         $cookingTime = $request->input('cooking_time');
-        $mealType = $request->input('meal_type');
-        $diet = $request->input('diet');
-        
-        // Start with a base query
-        $recipesQuery = Recipe::with(['user', 'categories', 'ingredients']);
-        
-        // Apply filters if they exist
+        $difficulty = $request->input('difficulty');
+        $category = $request->input('category');
+
+        $recipesQuery = Recipe::with(['user', 'category', 'ingredients']);
+
         if ($query) {
-            $recipesQuery->where(function($q) use ($query) {
+            $recipesQuery->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
                   ->orWhere('description', 'like', "%{$query}%");
             });
         }
-        
+
         if ($cuisine && $cuisine !== 'all') {
             $recipesQuery->where('cuisine', 'like', "%{$cuisine}%");
         }
-        
+
         if ($cookingTime && $cookingTime !== 'all') {
-            // Parse cooking time filter (e.g., "30-60" means between 30 and 60 minutes)
-            $times = explode('-', $cookingTime);
-            if (count($times) == 2) {
-                $recipesQuery->whereRaw('(prep_time + cook_time) BETWEEN ? AND ?', [$times[0], $times[1]]);
-            } elseif ($cookingTime == 'under30') {
-                $recipesQuery->whereRaw('(prep_time + cook_time) < 30');
-            } elseif ($cookingTime == 'over60') {
-                $recipesQuery->whereRaw('(prep_time + cook_time) > 60');
+            if ($cookingTime === 'under30') {
+                $recipesQuery->where('cook_time', '<=', 30);
+            } elseif ($cookingTime === '30to60') {
+                $recipesQuery->whereBetween('cook_time', [31, 60]);
+            } elseif ($cookingTime === 'over60') {
+                $recipesQuery->where('cook_time', '>', 60);
             }
         }
-        
-        // Add more filters as needed (meal_type, diet, etc.)
-        
-        $recipes = $recipesQuery->latest()->paginate(12);
-        
-        if ($request->ajax()) {
-            return view('partials.recipe-cards', compact('recipes'))->render();
+
+        if ($difficulty && $difficulty !== 'all') {
+            $recipesQuery->where('difficulty', $difficulty);
         }
+
+        if ($category && $category !== 'all') {
+            $recipesQuery->where('category_id', $category);
+        }
+
+        $recipes = $recipesQuery->latest()->paginate(12);
         
         return view('search', compact('recipes', 'cuisine'));
     }
