@@ -156,7 +156,7 @@
                             <i class="far fa-heart text-red-500"></i>
                         </div>
                         <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full py-1 px-3 text-xs font-medium flex items-center shadow-sm cuisine-tag">
-                            {{ $recipe->cuisine ?? ($recipe->categories->first() ? $recipe->categories->first()->name : 'Uncategorized') }}
+                            {{ $recipe->cuisine ?? ($recipe->category ? $recipe->category->name : 'Uncategorized') }}
                         </div>
                     </div>
                     <a href="{{ route('recipes.start-cooking', $recipe) }}" class="block">
