@@ -46,9 +46,16 @@
                 right: 0;
                 top: 100%;
                 min-width: 200px;
+                z-index: 50;
             }
     
-            .dropdown:hover .dropdown-content {
+            /* Remove the hover behavior */
+            /* .dropdown:hover .dropdown-content {
+                display: block;
+            } */
+            
+            /* Show dropdown when it has the 'show' class */
+            .dropdown-content.show {
                 display: block;
             }
        
@@ -92,20 +99,17 @@
     
                     <!-- User Menu -->
                     <div class="relative dropdown">
-                        <button class="flex items-center space-x-3 hover:bg-gray-50 px-3 py-2 rounded-lg">
+                        <button class="flex items-center space-x-3 hover:bg-gray-50 px-3 py-2 rounded-lg" onclick="toggleDropdown(this)">
                             <img src="https://randomuser.me/api/portraits/men/1.jpg" class="h-8 w-8 rounded-full object-cover">
                             <div class="text-left">
-                                <p class="text-sm font-medium text-gray-700">mazin0eg</p>
+                                <p class="text-sm font-medium text-gray-700">{{ Auth::user()->first_name }}!</p>
                                 <p class="text-xs text-gray-500">Administrator</p>
                             </div>
                             <i class="fas fa-chevron-down text-gray-400"></i>
                         </button>
                         <div class="dropdown-content bg-white rounded-lg shadow-lg py-2 border mt-1">
-                            <a href="#profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-user mr-2"></i> Profile
-                            </a>
-                            <a href="#settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-cog mr-2"></i> Settings
                             </a>
                             <hr class="my-2 border-gray-200">
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
@@ -120,48 +124,9 @@
             </div>
         </nav>
     
-        <!-- Main Navigation Pills -->
-        <div class="bg-white border-b border-gray-200">
-            <div class="container mx-auto px-4">
-                <div class="flex overflow-x-auto py-4 space-x-4 no-scrollbar">
-                    <button onclick="switchTab('dashboard')" class="tab-btn active-tab bg-red-500 text-white px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-home mr-2"></i> Dashboard
-                    </button>
-                    <button onclick="switchTab('categories')" class="tab-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-tags mr-2"></i> Categories
-                    </button>
-                    <button onclick="switchTab('recipes')" class="tab-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-utensils mr-2"></i> Recipes
-                    </button>
-                    <button onclick="switchTab('ingredients')" class="tab-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-carrot mr-2"></i> Ingredients
-                    </button>
-                    <button onclick="switchTab('chefs')" class="tab-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-user-chef mr-2"></i> Chefs
-                    </button>
-                    <button onclick="switchTab('users')" class="tab-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-users mr-2"></i> Users
-                    </button>
-                    <button onclick="switchTab('reports')" class="tab-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-chart-bar mr-2"></i> Reports
-                    </button>
-                    <button onclick="switchTab('settings')" class="tab-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
-                        <i class="fas fa-cog mr-2"></i> Settings
-                    </button>
-                </div>
-            </div>
-        </div>
+        
     
-        <!-- Breadcrumb -->
-        <div class="bg-gray-50 border-b border-gray-200">
-            <div class="container mx-auto px-4 py-3">
-                <div class="flex items-center text-sm text-gray-600">
-                    <a href="#" class="hover:text-gray-900">Dashboard</a>
-                    <i class="fas fa-chevron-right mx-2 text-gray-400 text-xs"></i>
-                    <span class="text-gray-900" id="currentSection">Overview</span>
-                </div>
-            </div>
-        </div>
+     
     
         
     
@@ -264,6 +229,103 @@
                 updateTime();
                 loadContent('dashboard');
             });
+            
+            // Toggle dropdown menu
+            function toggleDropdown(button) {
+                const dropdown = button.nextElementSibling;
+                dropdown.classList.toggle('show');
+            }
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdowns = document.querySelectorAll('.dropdown-content');
+                dropdowns.forEach(function(dropdown) {
+                    // Check if the click was outside the dropdown and its toggle button
+                    const toggleButton = dropdown.previousElementSibling;
+                    if (!dropdown.contains(event.target) && !toggleButton.contains(event.target)) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+            });
+            
+            // User modal functions
+            function openUserModal() {
+                document.getElementById('userModal').classList.remove('hidden');
+                // Setup user search
+                setupUserSearch();
+            }
+            
+            function closeUserModal() {
+                document.getElementById('userModal').classList.add('hidden');
+            }
+            
+            function setupUserSearch() {
+                const searchInput = document.getElementById('userSearchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('input', function() {
+                        const searchTerm = this.value.toLowerCase();
+                        const userRows = document.querySelectorAll('.user-row');
+                        
+                        userRows.forEach(function(row) {
+                            const userName = row.querySelector('td:first-child').textContent.toLowerCase();
+                            const userEmail = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                            const userRole = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                            
+                            if (userName.includes(searchTerm) || userEmail.includes(searchTerm) || userRole.includes(searchTerm)) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    });
+                }
+            }
+            
+            function toggleUserBan(userId, userName) {
+                if (confirm(`Are you sure you want to ban ${userName}?`)) {
+                    // Get the CSRF token from the meta tag
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    
+                    // Send AJAX request to ban user
+                    fetch(`/admin/users/${userId}/ban`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            _token: csrfToken
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert(`User ${userName} has been banned successfully.`);
+                            // Update the UI to show the user is banned
+                            const userRow = document.querySelector(`.user-row[data-user-id="${userId}"]`);
+                            if (userRow) {
+                                const roleCell = userRow.querySelector('td:nth-child(3) span');
+                                if (roleCell) {
+                                    roleCell.textContent = 'Banned';
+                                    roleCell.classList.remove('bg-green-100', 'text-green-800', 'bg-blue-100', 'text-blue-800');
+                                    roleCell.classList.add('bg-red-100', 'text-red-800');
+                                }
+                            }
+                        } else {
+                            alert('Failed to ban user. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error banning user:', error);
+                        alert('An error occurred while banning the user.');
+                    });
+                }
+            }
         </script>
  
 
@@ -295,14 +357,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="recipe-card bg-white rounded-lg p-6 shadow-sm">
+                <div class="recipe-card bg-white rounded-lg p-6 shadow-sm cursor-pointer" onclick="openUserModal()">
                     <div class="flex items-center">
-                        <div class="p-3 bg-green-100 rounded-full">
-                            <i class="fas fa-users text-green-500 text-xl"></i>
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <i class="fas fa-users text-blue-500 text-xl"></i>
                         </div>
                         <div class="ml-4">
-                            <h3 class="text-lg font-semibold">Active Chefs</h3>
-                            <p class="text-3xl font-bold">{{ $chefCount }}</p>
+                            <p class="text-sm text-gray-500">Users</p>
+                            <h3 class="text-2xl font-bold text-gray-900">{{ count($users ?? []) }}</h3>
                         </div>
                     </div>
                 </div>
@@ -356,9 +418,6 @@
                             @endif
                             <div class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">Published</div>
                             <div class="absolute top-2 right-2 flex space-x-2">
-                                <a href="{{ route('recipe.edit', $recipe->id) }}" class="bg-white/90 backdrop-blur-sm rounded-full p-2 text-blue-500 shadow-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
                                 <button onclick="confirmDeleteRecipe({{ $recipe->id }})" class="bg-white/90 backdrop-blur-sm rounded-full p-2 text-red-500 shadow-sm">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -433,7 +492,6 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <form action="{{ route('delete.category', $categorie->id) }}" method="POST" class="inline">
                                 @csrf
-                                @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
                             </form>
                         </td>
@@ -650,7 +708,79 @@
         </div>
     </section>
 
+    <!-- User Management Modal -->
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[80vh] overflow-hidden">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">User Management</h2>
+                <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-500">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-auto max-h-[calc(80vh-120px)]">
+                <div class="mb-4">
+                    <input type="text" id="userSearchInput" placeholder="Search users..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                </div>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="userTableBody">
+                        @foreach($users ?? [] as $user)
+                        <tr class="user-row" data-user-id="{{ $user->id }}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        @if($user->profile_image)
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('storage/' . $user->profile_image) }}" alt="{{ $user->first_name }}">
+                                        @else
+                                            <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                <i class="fas fa-user text-gray-400"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ $user->first_name }} {{ $user->last_name }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ $user->email }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $user->role == 'chef' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                    {{ ucfirst($user->role) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $user->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <form action="{{ route('admin.users.delete', ['id' => $user->id]) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this user?')">
+                                        <i class="fas fa-trash mr-1"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end">
+                <button onclick="closeUserModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 
-    
 </body>
 </html>
