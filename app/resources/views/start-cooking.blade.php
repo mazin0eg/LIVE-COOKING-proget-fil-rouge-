@@ -53,7 +53,7 @@
             <div class="container mx-auto">
                 <div class="max-w-4xl">
                     <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm mb-4 inline-block">
-                        {{ $recipe->categories->first() ? $recipe->categories->first()->name : 'Uncategorized' }}
+                        {{ $recipe->category ? $recipe->category->name : 'Uncategorized' }}
                     </span>
                     <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">{{ $recipe->title }}</h1>
                     <div class="flex flex-wrap items-center gap-6 text-white">
@@ -68,7 +68,13 @@
                         <!-- Chef info -->
                         <div class="flex items-center">
                             <i class="fas fa-user mr-2"></i>
-                            <span>Made by {{ $recipe->user->name }}</span>
+                            <span>Made by 
+                                @if($recipe->user)
+                                    {{ $recipe->user->first_name }} {{ $recipe->user->last_name }}
+                                @else
+                                    Unknown Chef
+                                @endif
+                            </span>
                         </div>
                     </div>
                 </div>
