@@ -62,9 +62,8 @@ class RecipeSeeder extends Seeder
             'difficulty' => $data['difficulty'],
             'cuisine' => $data['cuisine'],
             'image_path' => $data['image_path'] ?? null,
+            'category_id' => $category->id,
         ]);
-        
-        $recipe->categories()->attach($category->id);
         
         // Add ingredients
         foreach ($ingredients as $ingredient) {
@@ -638,7 +637,107 @@ class RecipeSeeder extends Seeder
     }
     
     private function createMoroccanRecipes($chef, $mainCourse, $soup) {
-        // Moroccan Tagine (Main Course)
+        // Moroccan Harira Soup (Soup)
+        $hariraData = [
+            'title' => 'Moroccan Harira Soup',
+            'description' => 'A hearty traditional Moroccan soup with lentils, chickpeas, tomatoes, and fragrant spices. Typically served during Ramadan to break the fast, but enjoyed year-round as a comforting meal.',
+            'prep_time' => 30,
+            'cook_time' => 60,
+            'servings' => 6,
+            'difficulty' => 'medium',
+            'cuisine' => 'Moroccan',
+            'image_path' => 'recipe-images/harira-soup.jpg',
+        ];
+        
+        $hariraIngredients = [
+            ['name' => 'Lamb or beef, diced (Lham)', 'quantity' => '300', 'unit' => 'g'],
+            ['name' => 'Onion, finely chopped (Basla)', 'quantity' => '1', 'unit' => 'large'],
+            ['name' => 'Celery stalks, chopped (Krafess)', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'Tomatoes, diced (Maticha)', 'quantity' => '4', 'unit' => 'medium'],
+            ['name' => 'Tomato paste (Concentré de Maticha)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Chickpeas, soaked overnight and drained (Hommos)', 'quantity' => '1', 'unit' => 'cup'],
+            ['name' => 'Brown lentils (L\'adess)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Rice (Roz)', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Fresh cilantro, chopped (Qsbour)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Fresh parsley, chopped (Maadnous)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Flour (Dqiq)', 'quantity' => '3', 'unit' => 'tbsp'],
+            ['name' => 'Ground cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground ginger (Skinjbir)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground turmeric (Kharkoum)', 'quantity' => '1/2', 'unit' => 'tsp'],
+            ['name' => 'Ground black pepper (Ibzar)', 'quantity' => '1/2', 'unit' => 'tsp'],
+            ['name' => 'Olive oil (Zit Zitoune)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Lemon wedges (Hamd)', 'quantity' => '1', 'unit' => 'for serving'],
+            ['name' => 'Dates (Tmar)', 'quantity' => '6', 'unit' => 'for serving'],
+        ];
+        
+        $hariraSteps = [
+            'In a large pot, heat olive oil over medium heat. Add the meat and brown on all sides (about 5 minutes).',
+            'Add the chopped onion and celery, and sauté until soft (about 3-4 minutes).',
+            'Add the tomatoes, tomato paste, chickpeas, lentils, cinnamon, ginger, turmeric, black pepper, and salt. Stir well to combine.',
+            'Pour in 8 cups of water, bring to a boil, then reduce heat to low. Cover and simmer for 45 minutes, or until the meat and legumes are tender.',
+            'Add the rice and continue to cook for another 15 minutes until the rice is tender.',
+            'In a small bowl, mix the flour with 1 cup of water until smooth with no lumps.',
+            'Slowly pour the flour mixture into the soup while stirring constantly to prevent lumps.',
+            'Add the chopped cilantro and parsley, and simmer for another 5 minutes until the soup thickens slightly.',
+            'Taste and adjust seasoning if needed.',
+            'Serve hot with lemon wedges and dates on the side, as traditionally done during Ramadan (Shehiwat Ramadan).'
+        ];
+        
+        $hariraEquipment = ['Large pot', 'Wooden spoon', 'Measuring cups and spoons', 'Sharp knife', 'Cutting board', 'Small bowl for flour mixture'];
+        
+        $this->createRecipe($hariraData, $chef, $soup, $hariraIngredients, $hariraSteps, $hariraEquipment);
+        
+        // Moroccan Chicken Tagine with Preserved Lemon and Olives (Main Course)
+        $chickenTagineData = [
+            'title' => 'Chicken Tagine with Preserved Lemon and Olives',
+            'description' => 'A classic Moroccan dish featuring tender chicken cooked with preserved lemons, olives, and aromatic spices. The combination of savory, tangy, and slightly bitter flavors creates a truly authentic Moroccan experience.',
+            'prep_time' => 20,
+            'cook_time' => 60,
+            'servings' => 4,
+            'difficulty' => 'medium',
+            'cuisine' => 'Moroccan',
+            'image_path' => 'recipe-images/chicken-tagine.jpg',
+        ];
+        
+        $chickenTagineIngredients = [
+            ['name' => 'Chicken pieces, preferably thighs and legs (Djaj)', 'quantity' => '1.5', 'unit' => 'kg'],
+            ['name' => 'Onions, thinly sliced (Basla)', 'quantity' => '2', 'unit' => 'medium'],
+            ['name' => 'Garlic cloves, minced (Touma)', 'quantity' => '4', 'unit' => ''],
+            ['name' => 'Preserved lemons, quartered (L\'hamd Markad)', 'quantity' => '2', 'unit' => ''],
+            ['name' => 'Green olives, pitted (Zitoun)', 'quantity' => '1', 'unit' => 'cup'],
+            ['name' => 'Fresh cilantro, chopped (Qsbour)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Fresh parsley, chopped (Maadnous)', 'quantity' => '1/2', 'unit' => 'cup'],
+            ['name' => 'Ground ginger (Skinjbir)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground turmeric (Kharkoum)', 'quantity' => '1/2', 'unit' => 'tsp'],
+            ['name' => 'Ground cumin (Kamoun)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Paprika (Felfla Hamra)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Saffron threads, soaked in warm water (Zafran)', 'quantity' => '1', 'unit' => 'pinch'],
+            ['name' => 'Olive oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
+            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Black pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Water (Ma)', 'quantity' => '1', 'unit' => 'cup'],
+        ];
+        
+        $chickenTagineSteps = [
+            'Rinse the preserved lemons, remove the pulp, and slice the rinds into thin strips. Set aside.',
+            'In a large bowl, mix the chicken pieces with half of the chopped cilantro and parsley, minced garlic, ginger, turmeric, cumin, paprika, salt, and pepper. Let marinate for at least 30 minutes (or overnight in the refrigerator for best results).',
+            'Heat olive oil in a tagine pot or heavy-bottomed Dutch oven over medium heat.',
+            'Add the sliced onions and cook until soft and translucent, about 5 minutes.',
+            'Add the marinated chicken pieces and brown on all sides, about 5 minutes.',
+            'Pour in the water and saffron with its soaking liquid. Bring to a simmer.',
+            'Reduce heat to low, cover, and simmer for about 45 minutes, or until the chicken is tender and cooked through.',
+            'Add the preserved lemon strips and olives, and continue cooking for another 15 minutes.',
+            'Taste and adjust seasoning if needed.',
+            'Garnish with the remaining fresh cilantro and parsley before serving.',
+            'Traditionally served with warm Moroccan bread (Khobz) or couscous to soak up the flavorful sauce (Marka).'
+        ];
+        
+        $chickenTagineEquipment = ['Tagine pot or Dutch oven', 'Large bowl for marinating', 'Sharp knife', 'Cutting board', 'Measuring spoons'];
+        
+        $this->createRecipe($chickenTagineData, $chef, $mainCourse, $chickenTagineIngredients, $chickenTagineSteps, $chickenTagineEquipment);
+        
+        // Moroccan Lamb Tagine with Prunes
         $tagineData = [
             'title' => 'Moroccan Lamb Tagine with Prunes',
             'description' => 'A traditional Moroccan slow-cooked stew made with tender lamb, sweet prunes, and aromatic spices. Served with couscous, this dish is perfect for special occasions.',
@@ -651,232 +750,36 @@ class RecipeSeeder extends Seeder
         ];
         
         $tagineIngredients = [
-            ['name' => 'Lamb Shoulder, cut into 2-inch cubes (Ktef El-Kharoof)', 'quantity' => '1.5', 'unit' => 'kg'],
-            ['name' => 'Onions, finely chopped (Basla)', 'quantity' => '2', 'unit' => 'large'],
-            ['name' => 'Garlic, minced (Touma)', 'quantity' => '4', 'unit' => 'cloves'],
-            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Ground Ginger (Skinjbir)', 'quantity' => '2', 'unit' => 'tsp'],
-            ['name' => 'Ground Cumin (Kamoun)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Paprika (Felfla Hamra)', 'quantity' => '1', 'unit' => 'tbsp'],
-            ['name' => 'Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Saffron Threads, soaked in hot water (Zafran)', 'quantity' => '1', 'unit' => 'pinch'],
-            ['name' => 'Dried Prunes, pitted (Barqouq)', 'quantity' => '250', 'unit' => 'g'],
-            ['name' => 'Honey (L\'assel)', 'quantity' => '2', 'unit' => 'tbsp'],
-            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
-            ['name' => 'Almonds, blanched and toasted (Louz)', 'quantity' => '100', 'unit' => 'g'],
-            ['name' => 'Sesame Seeds, toasted (Jinjelan)', 'quantity' => '2', 'unit' => 'tbsp'],
-            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/4', 'unit' => 'cup'],
+            ['name' => 'Lamb shoulder or neck, cut into 2-inch pieces (Lham)', 'quantity' => '1.5', 'unit' => 'kg'],
+            ['name' => 'Onions, chopped (Basla)', 'quantity' => '2', 'unit' => 'large'],
+            ['name' => 'Garlic cloves, minced (Touma)', 'quantity' => '4', 'unit' => ''],
+            ['name' => 'Ginger, grated (Skinjbir)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Ground cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground ginger (Skinjbir)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Ground turmeric (Kharkoum)', 'quantity' => '1/2', 'unit' => 'tsp'],
+            ['name' => 'Ground cumin (Kamoun)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Paprika (Felfla Hamra)', 'quantity' => '1', 'unit' => 'tsp'],
+            ['name' => 'Cayenne pepper (Felfla Hamra)', 'quantity' => '1/2', 'unit' => 'tsp'],
             ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
-            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Black pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
+            ['name' => 'Prunes (Zbib)', 'quantity' => '1', 'unit' => 'cup'],
+            ['name' => 'Honey (Assal)', 'quantity' => '2', 'unit' => 'tbsp'],
+            ['name' => 'Olive oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
             ['name' => 'Water (Ma)', 'quantity' => '2', 'unit' => 'cups'],
-            ['name' => 'Couscous (Kuskus)', 'quantity' => '500', 'unit' => 'g'],
         ];
         
         $tagineSteps = [
-            'In a large tagine pot or Dutch oven, heat the olive oil over medium-high heat.',
-            'Season the lamb with salt and pepper, then brown in batches, about 3-4 minutes per batch. Transfer to a plate.',
-            'In the same pot, add the onions and cook until soft and translucent, about 5 minutes.',
-            'Add the garlic and cook for another minute until fragrant.',
-            'Add the cinnamon, ginger, cumin, paprika, and turmeric. Stir for 30 seconds until fragrant.',
-            'Return the lamb to the pot along with any accumulated juices.',
-            'Add the saffron with its soaking water and enough additional water to just cover the meat.',
-            'Bring to a boil, then reduce heat to low, cover, and simmer for 2 hours or until the lamb is very tender.',
-            'Add the prunes and honey, then simmer uncovered for another 30 minutes until the sauce has thickened.',
-            'Meanwhile, prepare the couscous according to package instructions.',
-            'Toast the almonds in a dry skillet until golden brown.',
-            'Serve the tagine over couscous, garnished with toasted almonds, sesame seeds, and fresh cilantro.'
+            'Heat oil in a large tagine pot or Dutch oven over medium heat.',
+            'Add the chopped onions and cook until they start to caramelize, stirring occasionally.',
+            'Add the minced garlic and grated ginger, and cook for another minute.',
+            'Add the lamb pieces and cook until browned on all sides, about 5 minutes.',
+            'Add the cinnamon, ginger, turmeric, cumin, paprika, cayenne pepper, salt, and black pepper. Stir well to combine.',
+            'Add the prunes, honey, and water. Bring to a boil, then reduce heat to low and simmer, covered, for about 2 1/2 hours, or until the lamb is tender.',
+            'Serve the tagine hot, garnished with fresh parsley or cilantro, and accompanied by warm Moroccan bread (Khobz) or couscous.'
         ];
         
-        $tagineEquipment = ['Tagine pot or Dutch oven', 'Large skillet', 'Measuring spoons', 'Sharp knife', 'Cutting board'];
+        $tagineEquipment = ['Tagine pot or Dutch oven', 'Large bowl for marinating', 'Sharp knife', 'Cutting board', 'Measuring spoons'];
         
         $this->createRecipe($tagineData, $chef, $mainCourse, $tagineIngredients, $tagineSteps, $tagineEquipment);
-        
-        // Moroccan Couscous (Main Course)
-        $couscousData = [
-            'title' => 'Moroccan Seven Vegetable Couscous',
-            'description' => 'A colorful and flavorful Moroccan staple featuring fluffy couscous topped with seven vegetables and tender meat, seasoned with aromatic spices.',
-            'prep_time' => 45,
-            'cook_time' => 120,
-            'servings' => 8,
-            'difficulty' => 'medium',
-            'cuisine' => 'Moroccan',
-            'image_path' => 'recipe-images/moroccan-couscous.jpg',
-        ];
-        
-        $couscousIngredients = [
-            ['name' => 'Couscous (Kuskus)', 'quantity' => '750', 'unit' => 'g'],
-            ['name' => 'Lamb or Beef, cut into chunks (Lahm)', 'quantity' => '750', 'unit' => 'g'],
-            ['name' => 'Onions, chopped (Basla)', 'quantity' => '2', 'unit' => 'large'],
-            ['name' => 'Tomatoes, chopped (Maticha)', 'quantity' => '3', 'unit' => 'medium'],
-            ['name' => 'Carrots, peeled and cut (Khizzu)', 'quantity' => '4', 'unit' => 'medium'],
-            ['name' => 'Turnips, peeled and quartered (Left)', 'quantity' => '2', 'unit' => 'medium'],
-            ['name' => 'Zucchini, cut into chunks (Qaraa)', 'quantity' => '2', 'unit' => 'medium'],
-            ['name' => 'Cabbage, cut into wedges (Kromb)', 'quantity' => '1/4', 'unit' => 'head'],
-            ['name' => 'Chickpeas, soaked overnight and drained (Hommos)', 'quantity' => '250', 'unit' => 'g'],
-            ['name' => 'Butternut Squash, peeled and cubed (Graa Hamra)', 'quantity' => '500', 'unit' => 'g'],
-            ['name' => 'Garlic, minced (Touma)', 'quantity' => '3', 'unit' => 'cloves'],
-            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/2', 'unit' => 'cup'],
-            ['name' => 'Fresh Parsley, chopped (Maadnous)', 'quantity' => '1/2', 'unit' => 'cup'],
-            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Ground Ginger (Skinjbir)', 'quantity' => '2', 'unit' => 'tsp'],
-            ['name' => 'Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tbsp'],
-            ['name' => 'Ras el Hanout (Ras el Hanout)', 'quantity' => '2', 'unit' => 'tsp'],
-            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
-            ['name' => 'Butter (Zebda)', 'quantity' => '2', 'unit' => 'tbsp'],
-            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
-            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
-            ['name' => 'Water (Ma)', 'quantity' => '3', 'unit' => 'liters'],
-        ];
-        
-        $couscousSteps = [
-            'In a large pot, heat the olive oil over medium-high heat. Add the meat and brown on all sides.',
-            'Add the chopped onions and cook until translucent, about 5 minutes.',
-            'Add the garlic, half of the cilantro and parsley, cinnamon, ginger, turmeric, and ras el hanout. Stir for 1 minute until fragrant.',
-            'Add the tomatoes and cook for 5 minutes until they start to break down.',
-            'Add the chickpeas and enough water to cover everything by 2 inches. Bring to a boil, then reduce heat, cover, and simmer for 1 hour.',
-            'Meanwhile, rinse the couscous under cold water and drain. Spread it on a large plate and let it dry for 10 minutes.',
-            'After the meat has cooked for 1 hour, add the carrots, turnips, and butternut squash to the pot. Continue cooking for 20 minutes.',
-            'Add the zucchini and cabbage and cook for another 15-20 minutes until all vegetables are tender.',
-            'While the vegetables are cooking, prepare the couscous: In a couscoussier (or a large pot with a steamer basket), bring water to a boil in the bottom pot.',
-            'Place the couscous in the top part of the couscoussier. Steam for 15 minutes.',
-            'Remove the couscous, place in a large bowl, and break up any lumps with a fork. Sprinkle with 1/2 cup of cold water and 1 tablespoon of olive oil. Mix well.',
-            'Return the couscous to the steamer and steam for another 15 minutes. Repeat this process one more time.',
-            'After the final steaming, transfer the couscous to a large serving dish. Mix in the butter and fluff with a fork.',
-            'Arrange the meat and vegetables on top of the couscous, and pour some of the broth over it.',
-            'Garnish with the remaining fresh herbs and serve with additional broth on the side.'
-        ];
-        
-        $couscousEquipment = ['Large pot or couscoussier', 'Steamer basket', 'Large serving dish', 'Sharp knife', 'Cutting board'];
-        
-        $this->createRecipe($couscousData, $chef, $mainCourse, $couscousIngredients, $couscousSteps, $couscousEquipment);
-        
-        // Harira Soup (Soup)
-        $hariraData = [
-            'title' => 'Moroccan Harira Soup',
-            'description' => 'A hearty traditional Moroccan soup typically served during Ramadan to break the fast. Made with tomatoes, lentils, chickpeas, and aromatic spices, it\'s both nutritious and flavorful.',
-            'prep_time' => 30,
-            'cook_time' => 60,
-            'servings' => 8,
-            'difficulty' => 'medium',
-            'cuisine' => 'Moroccan',
-            'image_path' => 'recipe-images/harira.jpg',
-        ];
-        
-        $hariraIngredients = [
-            ['name' => 'Lamb or Beef, diced small (Lahm)', 'quantity' => '300', 'unit' => 'g'],
-            ['name' => 'Onions, finely chopped (Basla)', 'quantity' => '2', 'unit' => 'medium'],
-            ['name' => 'Celery, finely chopped (Krafess)', 'quantity' => '2', 'unit' => 'stalks'],
-            ['name' => 'Tomatoes, diced (Maticha)', 'quantity' => '4', 'unit' => 'large'],
-            ['name' => 'Tomato Paste (Marka dial Maticha)', 'quantity' => '2', 'unit' => 'tbsp'],
-            ['name' => 'Lentils, rinsed (Laadess)', 'quantity' => '150', 'unit' => 'g'],
-            ['name' => 'Chickpeas, soaked overnight and drained (Hommos)', 'quantity' => '150', 'unit' => 'g'],
-            ['name' => 'Rice (Rouz)', 'quantity' => '60', 'unit' => 'g'],
-            ['name' => 'Vermicelli or Broken Spaghetti (Chaaria)', 'quantity' => '60', 'unit' => 'g'],
-            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/2', 'unit' => 'cup'],
-            ['name' => 'Fresh Parsley, chopped (Maadnous)', 'quantity' => '1/2', 'unit' => 'cup'],
-            ['name' => 'Garlic, minced (Touma)', 'quantity' => '3', 'unit' => 'cloves'],
-            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Ground Ginger (Skinjbir)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Ground Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Paprika (Felfla Hamra)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '2', 'unit' => 'tbsp'],
-            ['name' => 'Flour (Dqiq)', 'quantity' => '2', 'unit' => 'tbsp'],
-            ['name' => 'Eggs, beaten (Beid)', 'quantity' => '2', 'unit' => ''],
-            ['name' => 'Lemon, juiced (Hamod)', 'quantity' => '1', 'unit' => ''],
-            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
-            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
-            ['name' => 'Water (Ma)', 'quantity' => '2.5', 'unit' => 'liters'],
-        ];
-        
-        $hariraSteps = [
-            'In a large pot, heat the olive oil over medium heat. Add the meat and cook until browned.',
-            'Add the onions, celery, and garlic. Cook until softened, about 5 minutes.',
-            'Add the tomatoes, tomato paste, cinnamon, ginger, turmeric, and paprika. Stir well.',
-            'Add half of the cilantro and parsley, then pour in the water. Bring to a boil.',
-            'Add the chickpeas and lentils. Reduce heat, cover, and simmer for 30 minutes.',
-            'Add the rice and continue to simmer for 15 minutes.',
-            'Add the vermicelli and cook for another 10 minutes until tender.',
-            'In a small bowl, mix the flour with 1/2 cup of water to create a smooth slurry.',
-            'Slowly pour the flour mixture into the soup, stirring constantly to prevent lumps.',
-            'Simmer for 5 more minutes until the soup thickens slightly.',
-            'Slowly pour in the beaten eggs while stirring the soup. The eggs will cook in thin strands.',
-            'Stir in the lemon juice and the remaining cilantro and parsley.',
-            'Season with salt and pepper to taste.',
-            'Serve hot with lemon wedges and dates on the side, as traditionally eaten during Ramadan.'
-        ];
-        
-        $hariraEquipment = ['Large pot', 'Wooden spoon', 'Measuring cups and spoons', 'Sharp knife', 'Cutting board', 'Small bowl for flour mixture'];
-        
-        $this->createRecipe($hariraData, $chef, $soup, $hariraIngredients, $hariraSteps, $hariraEquipment);
-        
-        // Moroccan Pastilla (Main Course)
-        $pastillaData = [
-            'title' => 'Moroccan Chicken Pastilla',
-            'description' => 'A spectacular Moroccan dish that combines sweet and savory flavors - shredded chicken, almonds, and eggs wrapped in crispy phyllo dough, dusted with powdered sugar and cinnamon.',
-            'prep_time' => 60,
-            'cook_time' => 90,
-            'servings' => 8,
-            'difficulty' => 'hard',
-            'cuisine' => 'Moroccan',
-            'image_path' => 'recipe-images/pastilla.jpg',
-        ];
-        
-        $pastillaIngredients = [
-            ['name' => 'Chicken Thighs (Fkhad Djaj)', 'quantity' => '1', 'unit' => 'kg'],
-            ['name' => 'Onions, finely chopped (Basla)', 'quantity' => '3', 'unit' => 'large'],
-            ['name' => 'Garlic, minced (Touma)', 'quantity' => '4', 'unit' => 'cloves'],
-            ['name' => 'Fresh Ginger, grated (Skinjbir)', 'quantity' => '1', 'unit' => 'tbsp'],
-            ['name' => 'Ground Cinnamon (Qarfa)', 'quantity' => '2', 'unit' => 'tsp'],
-            ['name' => 'Ground Turmeric (Kharkoum)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Ground Cumin (Kamoun)', 'quantity' => '1', 'unit' => 'tsp'],
-            ['name' => 'Saffron Threads, soaked in hot water (Zafran)', 'quantity' => '1', 'unit' => 'pinch'],
-            ['name' => 'Fresh Cilantro, chopped (Qsbour)', 'quantity' => '1/4', 'unit' => 'cup'],
-            ['name' => 'Fresh Parsley, chopped (Maadnous)', 'quantity' => '1/4', 'unit' => 'cup'],
-            ['name' => 'Almonds, blanched (Louz)', 'quantity' => '200', 'unit' => 'g'],
-            ['name' => 'Eggs (Beid)', 'quantity' => '6', 'unit' => ''],
-            ['name' => 'Phyllo Dough (Warqa)', 'quantity' => '1', 'unit' => 'package'],
-            ['name' => 'Butter, melted (Zebda)', 'quantity' => '200', 'unit' => 'g'],
-            ['name' => 'Powdered Sugar (Sukkar Naama)', 'quantity' => '4', 'unit' => 'tbsp'],
-            ['name' => 'Ground Cinnamon for dusting (Qarfa)', 'quantity' => '2', 'unit' => 'tbsp'],
-            ['name' => 'Olive Oil (Zit Zitoune)', 'quantity' => '3', 'unit' => 'tbsp'],
-            ['name' => 'Salt (Melha)', 'quantity' => '', 'unit' => 'to taste'],
-            ['name' => 'Black Pepper (Ibzar)', 'quantity' => '', 'unit' => 'to taste'],
-            ['name' => 'Water (Ma)', 'quantity' => '2', 'unit' => 'cups'],
-        ];
-        
-        $pastillaSteps = [
-            'In a large pot, heat the olive oil over medium heat. Add the chicken thighs, onions, garlic, ginger, cinnamon, turmeric, cumin, and saffron with its soaking water.',
-            'Add salt and pepper to taste, then pour in enough water to just cover the chicken.',
-            'Bring to a boil, then reduce heat, cover, and simmer for about 45 minutes until the chicken is very tender.',
-            'Remove the chicken from the broth and set aside to cool. Continue simmering the broth to reduce by half.',
-            'When the chicken is cool enough to handle, remove the skin and bones, and shred the meat into small pieces.',
-            'Toast the almonds in a dry skillet until golden brown. Let cool, then coarsely grind them in a food processor with 2 tablespoons of powdered sugar and 1 tablespoon of cinnamon.',
-            'Beat the eggs and slowly pour them into the simmering broth, stirring constantly to create thin strands. Cook for 2 minutes until the eggs are set.',
-            'Add the shredded chicken, cilantro, and parsley to the egg mixture. The filling should be moist but not watery. If needed, continue cooking to evaporate excess liquid.',
-            'Preheat the oven to 375°F (190°C).',
-            'Butter a 12-inch round baking pan or traditional clay tagine bottom.',
-            'Lay out the phyllo sheets and cover with a damp cloth to prevent drying.',
-            'Place 6 sheets of phyllo in the pan, brushing each sheet with melted butter and allowing the edges to hang over the sides of the pan.',
-            'Spread half of the almond mixture over the phyllo.',
-            'Spread the chicken and egg mixture over the almonds.',
-            'Top with the remaining almond mixture.',
-            'Fold the overhanging phyllo over the filling, then top with 6 more buttered phyllo sheets, tucking the edges into the sides of the pan.',
-            'Brush the top with melted butter.',
-            'Bake for 30-40 minutes until golden brown and crispy.',
-            'Let cool for 10 minutes, then invert onto a serving platter.',
-            'Dust generously with powdered sugar and create a decorative pattern with ground cinnamon.',
-            'Serve warm, cut into wedges.'
-        ];
-        
-        $pastillaEquipment = ['Large pot', 'Food processor', '12-inch round baking pan or tagine bottom', 'Pastry brush', 'Wooden spoon', 'Serving platter'];
-        
-        $this->createRecipe($pastillaData, $chef, $mainCourse, $pastillaIngredients, $pastillaSteps, $pastillaEquipment);
     }
-    
-    private function createFrenchRecipes($chef, $mainCourse, $dessert) {}
-    private function createIndianRecipes($chef, $mainCourse, $appetizer) {}
-    private function createChineseRecipes($chef, $mainCourse, $soup) {}
-    private function createThaiRecipes($chef, $mainCourse, $soup) {}
-    private function createGreekRecipes($chef, $mainCourse, $appetizer) {}
-    private function createTurkishRecipes($chef, $mainCourse, $appetizer) {}
 }
