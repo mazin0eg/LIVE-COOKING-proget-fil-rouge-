@@ -68,7 +68,7 @@
                         <!-- Chef info -->
                         <div class="flex items-center">
                             <i class="fas fa-user mr-2"></i>
-                            <span>Made by 
+                            <span>by 
                                 @if($recipe->user)
                                     {{ $recipe->user->first_name }} {{ $recipe->user->last_name }}
                                 @else

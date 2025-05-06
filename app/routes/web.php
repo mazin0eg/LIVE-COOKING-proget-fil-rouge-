@@ -13,26 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 
-// Debug route to check user role
-Route::get('/debug-role', function () {
-    if (Auth::check()) {
-        return 'Logged in as: ' . Auth::user()->first_name . ', Role: ' . Auth::user()->role;
-    } else {
-        return 'Not logged in';
-    }
-});
 
-// Test route to set user role to chef
-Route::get('/set-chef-role', function () {
-    if (Auth::check()) {
-        $user = User::find(Auth::id());
-        $user->role = 'chef';
-        $user->save();
-        return 'Role updated to chef for user: ' . $user->first_name;
-    } else {
-        return 'Not logged in';
-    }
-});
+
+
 
 // Public routes
 Route::get('/', [RecipeController::class, 'welcome'])->name('welcome');
