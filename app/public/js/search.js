@@ -111,12 +111,23 @@ function setupCuisineSearch() {
     // Get HTML elements
     const searchInput = document.getElementById('cuisine-search-input');
     const searchButton = document.getElementById('cuisine-search-button');
-    const cuisineCards = document.querySelectorAll('.cuisine-card');
+    const cuisineContainer = document.getElementById('cuisine-container');
     
     // Exit if elements don't exist on this page
-    if (!searchInput || !searchButton || cuisineCards.length === 0) {
+    if (!searchInput || !searchButton || !cuisineContainer) {
+        console.log('Cuisine search elements not found on this page');
         return;
     }
+    
+    // Get all cuisine cards within the container
+    const cuisineCards = cuisineContainer.querySelectorAll('.cuisine-card');
+    
+    if (cuisineCards.length === 0) {
+        console.log('No cuisine cards found on this page');
+        return;
+    }
+    
+    console.log(`Found ${cuisineCards.length} cuisine cards`);
     
     // Search when button is clicked
     searchButton.addEventListener('click', function() {
@@ -140,9 +151,13 @@ function setupCuisineSearch() {
     // Main cuisine search function
     function searchCuisines() {
         const query = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
         
         // Check each cuisine card
         cuisineCards.forEach(card => {
+            // Get parent <a> element that contains the card
+            const cardContainer = card.closest('a');
+            
             // Get text to search in
             const name = card.querySelector('h3')?.textContent || '';
             const dishes = Array.from(card.querySelectorAll('.text-xs.bg-gray-100'))
@@ -152,16 +167,32 @@ function setupCuisineSearch() {
             
             // Show all cards if no query
             if (query === '') {
-                card.style.display = 'block';
+                if (cardContainer) {
+                    cardContainer.style.display = 'block';
+                } else {
+                    card.style.display = 'block';
+                }
+                visibleCount++;
                 return;
             }
             
             // Show or hide based on search match
             if (searchText.includes(query)) {
-                card.style.display = 'block';
+                if (cardContainer) {
+                    cardContainer.style.display = 'block';
+                } else {
+                    card.style.display = 'block';
+                }
+                visibleCount++;
             } else {
-                card.style.display = 'none';
+                if (cardContainer) {
+                    cardContainer.style.display = 'none';
+                } else {
+                    card.style.display = 'none';
+                }
             }
         });
+        
+        console.log(`Search for "${query}" found ${visibleCount} matches`);
     }
 }
